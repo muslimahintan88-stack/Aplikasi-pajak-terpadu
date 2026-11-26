@@ -1,0 +1,2912 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplikasi Perpajakan Terpadu — Sahabat Pajak</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --theme-primary: #071b34;
+      --theme-primary-hover: #0e2e57;
+      --theme-accent: #facc15;
+      --theme-accent-dark: #ca8a04;
+      --theme-soft: #fefce8;
+    }
+
+    * {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+
+    /* Dynamic Theme Utility Classes */
+    .bg-theme-primary {
+      background-color: var(--theme-primary) !important;
+    }
+    .hover\:bg-theme-primary:hover {
+      background-color: var(--theme-primary-hover) !important;
+    }
+    .text-theme-primary {
+      color: var(--theme-primary) !important;
+    }
+    .border-theme-primary {
+      border-color: var(--theme-primary) !important;
+    }
+    .text-theme-accent {
+      color: var(--theme-accent) !important;
+    }
+    .text-theme-accent-dark {
+      color: var(--theme-accent-dark) !important;
+    }
+    .bg-theme-soft {
+      background-color: var(--theme-soft) !important;
+    }
+
+    /* Intro Splash Animation (±2.0 detik total) */
+    @keyframes logoEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.6) translateY(16px);
+      }
+      65% {
+        opacity: 1;
+        transform: scale(1.05) translateY(-2px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes shieldGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.35);
+      }
+      50% {
+        box-shadow: 0 0 0 16px rgba(250, 204, 21, 0);
+      }
+    }
+
+    @keyframes greetingSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .anim-logo {
+      animation: logoEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                 shieldGlow 1.4s ease-in-out 0.6s infinite;
+    }
+
+    .anim-greeting {
+      opacity: 0;
+      animation: greetingSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+    }
+
+    .anim-subgreeting {
+      opacity: 0;
+      animation: greetingSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.65s forwards;
+    }
+
+    #introOverlay {
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #introOverlay.hidden-intro {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Form Controls */
+    .tax-input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #0f172a;
+      background-color: #ffffff;
+      transition: all 0.15s ease;
+    }
+    .tax-input::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .tax-input:focus {
+      outline: none;
+      border-color: var(--theme-primary);
+      box-shadow: 0 0 0 3px rgba(7, 27, 52, 0.1);
+    }
+
+    .tax-input-sm {
+      border: 1px solid #cbd5e1;
+      border-radius: 0.45rem;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #0f172a;
+      background-color: #ffffff;
+      transition: border-color 0.15s ease;
+    }
+    .tax-input-sm::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .tax-input-sm:focus {
+      outline: none;
+      border-color: var(--theme-primary);
+      box-shadow: 0 0 0 2px rgba(7, 27, 52, 0.1);
+    }
+
+    .panel-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* =========================================================================
+       PRINT STYLES: PRESISI UKURAN A4 LANDSCAPE (1 JENIS PPh = 1 HALAMAN PENUH)
+       ========================================================================= */
+    #printArea {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+
+      html, body {
+        width: 100%;
+        height: auto;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      #introOverlay,
+      #appRoot,
+      #monthlyModal,
+      #settingsModal,
+      #printModal,
+      #toastBox {
+        display: none !important;
+      }
+
+      #printArea {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      .print-page {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        padding: 0;
+        margin: 0;
+      }
+
+      .print-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 7.2pt;
+        line-height: 1.25;
+      }
+
+      .print-table th,
+      .print-table td {
+        border: 1px solid #cbd5e1;
+        padding: 4px 5px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .print-table th {
+        background-color: var(--theme-primary) !important;
+        color: #ffffff !important;
+        font-weight: 700;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-slate-800 selection:text-white">
+
+  <!-- =========================================================================
+       1. ANIMASI INTRO SINGKAT (±2 DETIK) DENGAN LOGO PAJAK & SAMBUTAN
+       ========================================================================= -->
+  <div id="introOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-theme-primary text-white px-6">
+    <div class="flex flex-col items-center text-center max-w-md">
+      <!-- Animated SVG Tax Shield Logo -->
+      <div class="anim-logo w-20 h-20 rounded-2xl bg-white/10 border border-amber-400/40 flex items-center justify-center mb-5 backdrop-blur-sm">
+        <svg class="w-11 h-11 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      </div>
+
+      <!-- Animated Greeting -->
+      <h1 class="anim-greeting text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+        Selamat Datang Sahabat Pajak
+      </h1>
+      <p class="anim-subgreeting mt-2 text-xs sm:text-sm text-amber-300/90 font-medium">
+        Kalkulator Perpajakan Terpadu • PPh 21 TER, SPT 1721-A1 &amp; PPh Badan 31E
+      </p>
+    </div>
+
+    <button onclick="skipIntro()" class="absolute bottom-6 right-6 text-xs text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-full transition">
+      Lewati →
+    </button>
+  </div>
+
+  <!-- =========================================================================
+       2. APLIKASI UTAMA
+       ========================================================================= -->
+  <div id="appRoot" class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation & Editable Company Name Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+
+        <!-- Brand & Editable Company Name -->
+        <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+          <div class="w-10 h-10 rounded-xl bg-theme-primary flex items-center justify-center text-theme-accent shadow-sm shrink-0">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-bold text-slate-900 text-base sm:text-lg leading-tight" data-i18n="appTitle">Aplikasi Perpajakan Terpadu</span>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">PP 58/2023 &amp; UU HPP</span>
+            </div>
+
+            <!-- Direct Editable Company Name + Project Switcher -->
+            <div class="flex items-center gap-2 mt-1 flex-wrap">
+              <div class="relative flex items-center">
+                <input
+                  type="text"
+                  id="headerCompanyInput"
+                  oninput="updateActiveCompanyName(this.value)"
+                  placeholder="Ketik Nama Perusahaan Anda..."
+                  class="text-xs font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-300 rounded-lg px-2.5 py-1 w-56 sm:w-64 focus:outline-none focus:border-slate-800 transition"
+                />
+              </div>
+              <select
+                id="headerProjectSelect"
+                onchange="switchProject(this.value)"
+                title="Pindah Project / Perusahaan Klien"
+                class="text-xs font-semibold text-theme-primary bg-slate-100 hover:bg-slate-200/70 rounded-lg px-2.5 py-1 border border-slate-200 focus:outline-none cursor-pointer"
+              ></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Header Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-2.5">
+          <button onclick="openPrintModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-theme-primary hover:bg-theme-primary text-white shadow-sm transition">
+            <svg class="w-4 h-4 text-theme-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span data-i18n="btnPrintPdf">Cetak PDF (A4)</span>
+          </button>
+
+          <button onclick="openSettingsModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm transition">
+            <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span data-i18n="btnSettings">Setelan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Navigation Tabs -->
+      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 border-t border-slate-100 overflow-x-auto">
+        <nav class="flex items-center gap-1 sm:gap-2 py-2 min-w-max" role="tablist">
+          <button id="tabBtn-bulanan" onclick="switchTab('bulanan')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-theme-primary text-white shadow-sm">
+            <span>1.</span>
+            <span data-i18n="tabMonthly">PPh 21 Bulanan (TER)</span>
+          </button>
+          <button id="tabBtn-tahunan" onclick="switchTab('tahunan')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+            <span>2.</span>
+            <span data-i18n="tabAnnual">PPh 21 Tahunan (1721-A1)</span>
+          </button>
+          <button id="tabBtn-badan" onclick="switchTab('badan')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+            <span>3.</span>
+            <span data-i18n="tabCorporate">PPh Badan (Pasal 31E)</span>
+          </button>
+          <button id="tabBtn-referensi" onclick="switchTab('referensi')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+            <span>4.</span>
+            <span data-i18n="tabReference">Referensi Tarif &amp; PTKP</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6">
+
+      <!-- =====================================================================
+           TAB 1: PPh 21 BULANAN (TER PP No. 58 Tahun 2023)
+           ===================================================================== -->
+      <section id="tab-bulanan" class="tab-content space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+          <!-- LEFT CARD: Parameter Input Simulasi Pemotongan Bulanan -->
+          <div class="lg:col-span-5 panel-card p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+              <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="monthlySimTitle">Simulasi Pemotongan Bulanan</h2>
+              <button onclick="resetActiveMonthlyEmployee()" class="text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 transition" data-i18n="btnReset">Reset</button>
+            </div>
+
+            <!-- Bar Pilih / Tambah / Hapus Karyawan -->
+            <div class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <label class="text-xs font-semibold text-slate-600" data-i18n="selectEmployeeLabel">Karyawan yang Sedang Diedit</label>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="addNewEmployee()" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition">
+                    + <span data-i18n="btnAddEmp">Tambah Karyawan</span>
+                  </button>
+                  <button onclick="deleteActiveEmployee()" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition">
+                    <span data-i18n="btnDelEmp">Hapus</span>
+                  </button>
+                </div>
+              </div>
+              <select id="monthlyEmpSelector" onchange="selectEmployee(this.value)" class="tax-input text-sm font-semibold bg-white"></select>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Nama Karyawan & NPWP/NIK -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="empNameLabel">Nama Karyawan</label>
+                  <input type="text" id="m_nama" oninput="syncEmployeeTextField('nama', this.value)" class="tax-input" placeholder="Nama Karyawan..." />
+                </div>
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5">NPWP / NIK</label>
+                  <input type="text" id="m_npwp" oninput="syncEmployeeTextField('npwp', this.value)" class="tax-input" placeholder="NPWP / NIK..." />
+                </div>
+              </div>
+
+              <!-- Status PTKP + Kategori TER -->
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="selectPtkpTerLabel">Pilih Status PTKP (Menentukan Kategori TER)</label>
+                <select id="m_ptkp" onchange="syncEmployeeTextField('ptkp', this.value)" class="tax-input">
+                  <option value="TK/0">TK/0 - PTKP Rp 54.000.000 (TER A)</option>
+                  <option value="TK/1">TK/1 - PTKP Rp 58.500.000 (TER A)</option>
+                  <option value="K/0">K/0 - PTKP Rp 58.500.000 (TER A)</option>
+                  <option value="TK/2">TK/2 - PTKP Rp 63.000.000 (TER B)</option>
+                  <option value="TK/3">TK/3 - PTKP Rp 67.500.000 (TER B)</option>
+                  <option value="K/1">K/1 - PTKP Rp 63.000.000 (TER B)</option>
+                  <option value="K/2">K/2 - PTKP Rp 67.500.000 (TER B)</option>
+                  <option value="K/3">K/3 - PTKP Rp 72.000.000 (TER C)</option>
+                  <option value="K/I/0">K/I/0 - PTKP Rp 112.500.000 (TER A)</option>
+                  <option value="K/I/1">K/I/1 - PTKP Rp 117.000.000 (TER B)</option>
+                  <option value="K/I/2">K/I/2 - PTKP Rp 121.500.000 (TER B)</option>
+                  <option value="K/I/3">K/I/3 - PTKP Rp 126.000.000 (TER C)</option>
+                </select>
+              </div>
+
+              <!-- Gaji Pokok Sebulan -->
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="baseSalaryMonthLabel">Gaji Pokok Sebulan</label>
+                <input type="text" inputmode="numeric" id="m_gaji" oninput="handleEmployeeNumericInput(this, 'gajiBulanan')" placeholder="0" class="tax-input font-semibold" />
+              </div>
+
+              <!-- Tunjangan PPh 21 / Tunjangan Lain -->
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="allowanceMonthLabel">Tunjangan PPh 21 / Tunjangan Lain</label>
+                <input type="text" inputmode="numeric" id="m_tunjangan" oninput="handleEmployeeNumericInput(this, 'tunjanganBulanan')" placeholder="0" class="tax-input" />
+              </div>
+
+              <!-- THR / Bonus Bulan Ini -->
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="thrMonthLabel">THR / Bonus Bulan Ini (Opsional)</label>
+                <input type="text" inputmode="numeric" id="m_thr" oninput="handleEmployeeNumericInput(this, 'thrBulanan')" placeholder="0" class="tax-input" />
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                <button onclick="recalculateAll(true)" class="w-full py-3 px-4 rounded-xl bg-theme-primary hover:bg-theme-primary text-theme-accent font-bold text-xs sm:text-sm shadow-sm transition">
+                  <span data-i18n="btnCalcMonthly">Hitung PPh 21 TER</span>
+                </button>
+                <button onclick="addNewEmployee()" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
+                  + <span data-i18n="btnSaveToList">Simpan / Tambah Baru</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: 2 Kartu Ringkasan & Rincian Rumus TER PP 58/2023 -->
+          <div class="lg:col-span-7 space-y-5">
+            <!-- 2 Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-theme-primary rounded-2xl p-5 sm:p-6 text-white shadow-sm flex flex-col justify-between">
+                <span class="text-xs sm:text-sm font-medium text-theme-accent" data-i18n="monthlyTaxDueTitle">PPh 21 Terutang Sebulan</span>
+                <div id="m_res_pph" class="text-2xl sm:text-3xl font-extrabold text-theme-accent my-2 tracking-tight">Rp 0</div>
+                <span id="m_res_rate_label" class="text-xs text-slate-300">Tarif TER: 0.00%</span>
+              </div>
+
+              <div class="panel-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                <span class="text-xs sm:text-sm font-medium text-slate-500" data-i18n="netTakeHomeTitle">Gaji Bersih Diterima (Take Home Pay)</span>
+                <div id="m_res_thp" class="text-2xl sm:text-3xl font-extrabold text-slate-900 my-2 tracking-tight">Rp 0</div>
+                <span class="text-xs text-slate-400" data-i18n="netTakeHomeSub">Bruto – Potongan PPh 21</span>
+              </div>
+            </div>
+
+            <!-- Rincian Rumus TER PP 58/2023 -->
+            <div class="panel-card p-5 sm:p-6">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100">
+                <div>
+                  <h3 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800" data-i18n="terFormulaHeader">RINCIAN RUMUS TER PP 58/2023</h3>
+                  <p id="m_res_emp_subtitle" class="text-xs text-slate-500 mt-0.5">Karyawan: (Belum diisi)</p>
+                </div>
+                <button onclick="openMonthlyBreakdownModal(state.activeEmpId)" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+                  <span>📅</span>
+                  <span data-i18n="btnViewPerMonth">Lihat Per Bulan (Jan–Des)</span>
+                </button>
+              </div>
+
+              <div class="divide-y divide-slate-100 text-sm">
+                <div class="py-3 flex items-center justify-between">
+                  <span class="text-slate-600" data-i18n="grossThisMonth">Penghasilan Bruto Bulan Ini:</span>
+                  <span id="m_res_bruto" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-3 flex items-center justify-between">
+                  <span class="text-slate-600" data-i18n="terCategoryLabel">Kategori TER:</span>
+                  <span id="m_res_cat_badge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">Kategori A (PTKP TK/0)</span>
+                </div>
+                <div class="py-3 flex items-center justify-between">
+                  <span class="text-slate-600" data-i18n="terRateApplied">Tarif Efektif Sesuai Lapisan Bruto:</span>
+                  <span id="m_res_rate" class="font-bold text-slate-900">0.00%</span>
+                </div>
+                <div class="pt-4 pb-1 flex items-center justify-between text-base">
+                  <span class="font-bold text-slate-900" data-i18n="monthlyDeductionFinal">Potongan PPh 21 Bulan Ini:</span>
+                  <span id="m_res_pph_bottom" class="font-extrabold text-slate-900">Rp 0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM TABLE: Daftar Karyawan Perusahaan (PPh 21 Bulanan) -->
+        <div class="panel-card p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900" data-i18n="monthlyListTitle">Daftar Karyawan Perusahaan (PPh 21 Bulanan)</h3>
+              <p class="text-xs text-slate-500 mt-0.5" data-i18n="monthlyListSub">Isi atau edit langsung Nama, NPWP/NIK, Gaji, Tunjangan, &amp; THR/Bonus tiap karyawan. Centang kotak kiri untuk memilih karyawan saat cetak PDF.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="toggleSelectAllEmployees(true)" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" data-i18n="btnSelectAll">Pilih Semua</button>
+              <button onclick="toggleSelectAllEmployees(false)" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" data-i18n="btnUnselectAll">Batal Pilih</button>
+              <button onclick="addNewEmployee()" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition">
+                + <span data-i18n="btnAddEmp">Tambah Karyawan</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left border-collapse min-w-[1160px]">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                  <th class="py-3 px-2.5 text-center w-10">
+                    <input type="checkbox" id="checkAllMonthly" onchange="toggleSelectAllEmployees(this.checked)" class="w-4 h-4 rounded accent-slate-900 cursor-pointer" title="Pilih semua untuk cetak PDF" />
+                  </th>
+                  <th class="py-3 px-2.5">Nama Karyawan</th>
+                  <th class="py-3 px-2.5">NPWP / NIK</th>
+                  <th class="py-3 px-2 text-center">PTKP</th>
+                  <th class="py-3 px-2 text-center">TER</th>
+                  <th class="py-3 px-2.5 text-right">Gaji Pokok</th>
+                  <th class="py-3 px-2.5 text-right">Tunjangan PPh 21</th>
+                  <th class="py-3 px-2.5 text-right">THR / Bonus</th>
+                  <th class="py-3 px-2.5 text-right">Total Bruto</th>
+                  <th class="py-3 px-2 text-center">Tarif</th>
+                  <th class="py-3 px-2.5 text-right">PPh 21 TER</th>
+                  <th class="py-3 px-2.5 text-right">Gaji Dibayarkan</th>
+                  <th class="py-3 px-2.5 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="monthlyTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm"></tbody>
+              <tfoot id="monthlyTableFoot" class="bg-slate-50/90 border-t-2 border-slate-200 font-bold text-xs sm:text-sm text-slate-900"></tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 2: PPh 21 TAHUNAN (MASA PAJAK DESEMBER / FORMULIR 1721-A1)
+           ===================================================================== -->
+      <section id="tab-tahunan" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+          <!-- LEFT CARD: Parameter Input Karyawan Tahunan -->
+          <div class="lg:col-span-5 panel-card p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+              <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="annualParamTitle">Parameter Input Karyawan</h2>
+              <button onclick="resetActiveAnnualEmployee()" class="text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 transition" data-i18n="btnReset">Reset</button>
+            </div>
+
+            <!-- Bar Pilih / Tambah / Hapus Karyawan -->
+            <div class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <label class="text-xs font-semibold text-slate-600" data-i18n="selectEmployeeLabel">Karyawan yang Sedang Diedit</label>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="addNewEmployee()" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition">
+                    + <span data-i18n="btnAddEmp">Tambah Karyawan</span>
+                  </button>
+                  <button onclick="deleteActiveEmployee()" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition">
+                    <span data-i18n="btnDelEmp">Hapus</span>
+                  </button>
+                </div>
+              </div>
+              <select id="annualEmpSelector" onchange="selectEmployee(this.value)" class="tax-input text-sm font-semibold bg-white"></select>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Nama Karyawan & NPWP/NIK -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="empNameLabel">Nama Karyawan</label>
+                  <input type="text" id="a_nama" oninput="syncEmployeeTextField('nama', this.value)" class="tax-input" placeholder="Nama Karyawan..." />
+                </div>
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5">NPWP / NIK</label>
+                  <input type="text" id="a_npwp" oninput="syncEmployeeTextField('npwp', this.value)" class="tax-input" placeholder="NPWP / NIK..." />
+                </div>
+              </div>
+
+              <!-- Status PTKP -->
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="ptkpStatusLabel">Status PTKP</label>
+                <select id="a_ptkp" onchange="syncEmployeeTextField('ptkp', this.value)" class="tax-input">
+                  <option value="TK/0">TK/0 - Tidak Kawin, 0 Tanggungan (Rp 54.000.000)</option>
+                  <option value="TK/1">TK/1 - Tidak Kawin, 1 Tanggungan (Rp 58.500.000)</option>
+                  <option value="TK/2">TK/2 - Tidak Kawin, 2 Tanggungan (Rp 63.000.000)</option>
+                  <option value="TK/3">TK/3 - Tidak Kawin, 3 Tanggungan (Rp 67.500.000)</option>
+                  <option value="K/0">K/0 - Kawin, 0 Tanggungan (Rp 58.500.000)</option>
+                  <option value="K/1">K/1 - Kawin, 1 Tanggungan (Rp 63.000.000)</option>
+                  <option value="K/2">K/2 - Kawin, 2 Tanggungan (Rp 67.500.000)</option>
+                  <option value="K/3">K/3 - Kawin, 3 Tanggungan (Rp 72.000.000)</option>
+                  <option value="K/I/0">K/I/0 - Kawin Penghasilan Digabung, 0 Tanggungan (Rp 112.500.000)</option>
+                  <option value="K/I/1">K/I/1 - Kawin Penghasilan Digabung, 1 Tanggungan (Rp 117.000.000)</option>
+                  <option value="K/I/2">K/I/2 - Kawin Penghasilan Digabung, 2 Tanggungan (Rp 121.500.000)</option>
+                  <option value="K/I/3">K/I/3 - Kawin Penghasilan Digabung, 3 Tanggungan (Rp 126.000.000)</option>
+                </select>
+              </div>
+
+              <!-- KOMPONEN GAJI POKOK -->
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500" data-i18n="baseSalaryCompHeader">KOMPONEN GAJI POKOK</div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1" data-i18n="decSalaryLabel">Gaji Desember</label>
+                    <input type="text" inputmode="numeric" id="a_gajiDes" oninput="handleEmployeeNumericInput(this, 'gajiDes')" placeholder="0" class="tax-input" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1" data-i18n="janNovSalaryLabel">Gaji Jan–Nov (11 bln)</label>
+                    <input type="text" inputmode="numeric" id="a_gajiJanNov" oninput="handleEmployeeNumericInput(this, 'gajiJanNov')" placeholder="0" class="tax-input" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tunj. PPh 21 (Des) & BPJS (Des) -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tunj. PPh 21 (Des)</label>
+                  <input type="text" inputmode="numeric" id="a_tunjDes" oninput="handleEmployeeNumericInput(this, 'tunjDes')" placeholder="0" class="tax-input" />
+                </div>
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">BPJS (Desember)</label>
+                  <input type="text" inputmode="numeric" id="a_bpjsDes" oninput="handleEmployeeNumericInput(this, 'bpjsDes')" placeholder="0" class="tax-input" />
+                </div>
+              </div>
+
+              <!-- Tunj. PPh 21 (Jan-Nov) & BPJS (Jan-Nov) -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tunj. PPh 21 (Jan–Nov)</label>
+                  <input type="text" inputmode="numeric" id="a_tunjJanNov" oninput="handleEmployeeNumericInput(this, 'tunjJanNov')" placeholder="0" class="tax-input" />
+                </div>
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">BPJS (Jan–Nov)</label>
+                  <input type="text" inputmode="numeric" id="a_bpjsJanNov" oninput="handleEmployeeNumericInput(this, 'bpjsJanNov')" placeholder="0" class="tax-input" />
+                </div>
+              </div>
+
+              <!-- THR/Bonus Setahun & PPh 21 Sudah Dipotong Jan-Nov -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">THR / Bonus Setahun</label>
+                  <input type="text" inputmode="numeric" id="a_thrSetahun" oninput="handleEmployeeNumericInput(this, 'thrSetahun')" placeholder="0" class="tax-input" />
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block text-xs sm:text-sm font-medium text-slate-700">PPh 21 Jan–Nov (TER)</label>
+                    <button type="button" onclick="autoFillJanNovTer()" class="text-[10px] font-bold text-blue-600 hover:underline" title="Hitung otomatis total PPh TER Jan-Nov">Auto TER</button>
+                  </div>
+                  <input type="text" inputmode="numeric" id="a_pphJanNov" oninput="handleEmployeeNumericInput(this, 'pphJanNov')" placeholder="0" class="tax-input" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: 2 Kartu Ringkasan & Rincian Formulir 1721-A1 -->
+          <div class="lg:col-span-7 space-y-5">
+            <!-- 2 Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-theme-primary rounded-2xl p-5 sm:p-6 text-white shadow-sm flex flex-col justify-between">
+                <span class="text-xs sm:text-sm font-medium text-theme-accent" data-i18n="decUnderpaymentTitle">PPh 21 Masa Desember (Kurang/Lebih Bayar)</span>
+                <div id="a_res_desember" class="text-2xl sm:text-3xl font-extrabold text-theme-accent my-2 tracking-tight">Rp 0</div>
+                <span class="text-xs text-slate-300">PPh Setahun – PPh Jan–Nov</span>
+              </div>
+
+              <div class="panel-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                <span class="text-xs sm:text-sm font-medium text-slate-500" data-i18n="annualTotalTaxTitle">Total PPh 21 Setahun (Ps. 17)</span>
+                <div id="a_res_setahun" class="text-2xl sm:text-3xl font-extrabold text-slate-900 my-2 tracking-tight">Rp 0</div>
+                <span class="text-xs font-medium text-amber-600">Sesuai SPT 1721-A1</span>
+              </div>
+            </div>
+
+            <!-- Rincian Perhitungan Formulir 1721-A1 -->
+            <div class="panel-card p-5 sm:p-6">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-3 border-b border-slate-100">
+                <div>
+                  <h3 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800" data-i18n="form1721Header">RINCIAN PERHITUNGAN FORMULIR 1721-A1</h3>
+                  <p id="a_res_emp_subtitle" class="text-xs text-slate-500 mt-0.5">Karyawan: (Belum diisi)</p>
+                </div>
+                <button onclick="openMonthlyBreakdownModal(state.activeEmpId)" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+                  <span>📅</span>
+                  <span data-i18n="btnViewPerMonth">Lihat Per Bulan (Jan–Des)</span>
+                </button>
+              </div>
+
+              <div class="space-y-1.5 text-sm">
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">Total Bruto Teratur (Gaji 12 bln + Tunjangan + BPJS)</span>
+                  <span id="a_res_bruto_teratur" class="font-semibold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">Penghasilan Tidak Teratur (THR / Bonus)</span>
+                  <span id="a_res_thr" class="font-semibold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2.5 px-3 rounded-lg bg-slate-50 flex items-center justify-between font-bold">
+                  <span class="text-slate-900">Total Penghasilan Bruto Setahun</span>
+                  <span id="a_res_bruto_total" class="text-blue-600">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">Pengurang: Biaya Jabatan (5%, maks. Rp 6.000.000)</span>
+                  <span id="a_res_biaya_jabatan" class="font-semibold text-rose-600">- Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between font-bold">
+                  <span class="text-slate-900">Penghasilan Neto Setahun</span>
+                  <span id="a_res_neto" class="text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span id="a_res_ptkp_label" class="text-slate-600">PTKP Setahun (TK/0)</span>
+                  <span id="a_res_ptkp" class="font-semibold text-rose-600">- Rp 54.000.000</span>
+                </div>
+                <div class="py-2.5 px-3 rounded-lg bg-slate-50 flex items-center justify-between font-bold">
+                  <span class="text-slate-900">Penghasilan Kena Pajak (PKP Dibulatkan)</span>
+                  <span id="a_res_pkp" class="text-blue-600">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">PPh 21 Setahun (Tarif Progresif Pasal 17 UU HPP)</span>
+                  <span id="a_res_pph17" class="font-semibold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">PPh 21 Telah Dipotong Jan–Nov (TER)</span>
+                  <span id="a_res_pph_jannov" class="font-semibold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-3 px-3 rounded-xl bg-theme-soft border border-amber-200/70 flex items-center justify-between font-extrabold text-base mt-2">
+                  <span class="text-slate-900">PPh 21 Terutang Masa Desember</span>
+                  <span id="a_res_pph_des_bottom" class="text-slate-900">Rp 0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM TABLE: Rekapitulasi PPh 21 Tahunan Karyawan -->
+        <div class="panel-card p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900" data-i18n="annualListTitle">Rekapitulasi PPh 21 Tahunan Karyawan (SPT 1721-A1)</h3>
+              <p class="text-xs text-slate-500 mt-0.5" data-i18n="annualListSub">Daftar tersinkronisasi otomatis dengan tab PPh 21 Bulanan. Anda dapat menambah/menghapus karyawan dan memilih baris untuk cetak PDF.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="toggleSelectAllEmployees(true)" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" data-i18n="btnSelectAll">Pilih Semua</button>
+              <button onclick="toggleSelectAllEmployees(false)" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" data-i18n="btnUnselectAll">Batal Pilih</button>
+              <button onclick="addNewEmployee()" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition">
+                + <span data-i18n="btnAddEmp">Tambah Karyawan</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left border-collapse min-w-[1060px]">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                  <th class="py-3 px-2.5 text-center w-10">
+                    <input type="checkbox" id="checkAllAnnual" onchange="toggleSelectAllEmployees(this.checked)" class="w-4 h-4 rounded accent-slate-900 cursor-pointer" title="Pilih semua untuk cetak PDF" />
+                  </th>
+                  <th class="py-3 px-2.5">Nama Karyawan &amp; NIK</th>
+                  <th class="py-3 px-2 text-center">PTKP</th>
+                  <th class="py-3 px-2.5 text-right">THR / Bonus Setahun</th>
+                  <th class="py-3 px-2.5 text-right">Bruto Setahun</th>
+                  <th class="py-3 px-2.5 text-right">PKP Setahun</th>
+                  <th class="py-3 px-2.5 text-right">PPh 21 Setahun</th>
+                  <th class="py-3 px-2.5 text-right">Dipotong Jan–Nov</th>
+                  <th class="py-3 px-2.5 text-right">PPh Masa Des</th>
+                  <th class="py-3 px-2.5 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="annualTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm"></tbody>
+              <tfoot id="annualTableFoot" class="bg-slate-50/90 border-t-2 border-slate-200 font-bold text-xs sm:text-sm text-slate-900"></tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 3: PPh BADAN PASAL 31E
+           ===================================================================== -->
+      <section id="tab-badan" class="tab-content hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+          <!-- LEFT CARD: Input Data Keuangan Badan Usaha -->
+          <div class="lg:col-span-5 panel-card p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+              <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="corpInputTitle">Data Keuangan Badan Usaha</h2>
+              <button onclick="resetCorporateData()" class="text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 transition" data-i18n="btnReset">Reset</button>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="grossTurnoverLabel">Peredaran Bruto Usaha (Omzet)</label>
+                <input type="text" inputmode="numeric" id="b_omzet" oninput="handleCorpNumericInput(this, 'omzet')" placeholder="Contoh: 13.000.000.000" class="tax-input font-semibold" />
+                <p class="text-[11px] text-slate-400 mt-1" data-i18n="grossTurnoverHint">Maksimal Rp 50 Miliar untuk fasilitas Pasal 31E</p>
+              </div>
+
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="otherGrossLabel">Peredaran Bruto Lainnya</label>
+                <input type="text" inputmode="numeric" id="b_omzetLain" oninput="handleCorpNumericInput(this, 'omzetLain')" placeholder="0" class="tax-input" />
+              </div>
+
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="fiscalNetProfitLabel">Penghasilan Neto Fiskal / Laba Bersih (Before Tax)</label>
+                <input type="text" inputmode="numeric" id="b_laba" oninput="handleCorpNumericInput(this, 'laba')" placeholder="Contoh: 4.990.000.000" class="tax-input font-semibold" />
+              </div>
+
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1.5" data-i18n="taxCredit25Label">Kredit Pajak (PPh Pasal 25 yang Sudah Dibayar)</label>
+                <input type="text" inputmode="numeric" id="b_kredit25" oninput="handleCorpNumericInput(this, 'kredit25')" placeholder="0" class="tax-input" />
+              </div>
+
+              <button onclick="recalculateAll(true)" class="w-full py-3 px-4 rounded-xl bg-theme-primary hover:bg-theme-primary text-theme-accent font-bold text-sm shadow-sm transition">
+                <span data-i18n="btnCalcCorp">Hitung PPh Badan (Pasal 31E)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Hasil & Rincian Perhitungan Fasilitas Pasal 31E -->
+          <div class="lg:col-span-7 space-y-5">
+            <!-- 2 Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-theme-primary rounded-2xl p-5 sm:p-6 text-white shadow-sm flex flex-col justify-between">
+                <span class="text-xs sm:text-sm font-medium text-theme-accent" data-i18n="pph29Title">PPh Pasal 29 (Kurang Bayar)</span>
+                <div id="b_res_pph29" class="text-2xl sm:text-3xl font-extrabold text-theme-accent my-2 tracking-tight">Rp 0</div>
+                <span class="text-xs text-slate-300" data-i18n="pph29Sub">Harus disetor ke kas negara</span>
+              </div>
+
+              <div class="panel-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                <span class="text-xs sm:text-sm font-medium text-slate-500" data-i18n="totalCorpTaxTitle">Total PPh Terutang</span>
+                <div id="b_res_total" class="text-2xl sm:text-3xl font-extrabold text-slate-900 my-2 tracking-tight">Rp 0</div>
+                <span class="text-xs font-medium text-amber-600">Fasilitas + Non-Fasilitas</span>
+              </div>
+            </div>
+
+            <!-- Rincian Perhitungan Fasilitas Pasal 31E -->
+            <div class="panel-card p-5 sm:p-6">
+              <div class="pb-4 mb-3 border-b border-slate-100">
+                <h3 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800" data-i18n="corpDetailHeader">RINCIAN PERHITUNGAN FASILITAS PASAL 31E</h3>
+              </div>
+
+              <div class="space-y-1.5 text-sm">
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">Total Peredaran Bruto (Omzet Gabungan)</span>
+                  <span id="b_res_omzet" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-600">Laba Bersih Fiskal (PKP Badan)</span>
+                  <span id="b_res_laba" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2.5 px-3 rounded-lg bg-slate-50 flex items-center justify-between">
+                  <div>
+                    <div class="text-slate-700 font-medium">Bagian PKP Fasilitas:</div>
+                    <div id="b_res_pkp_fas_formula" class="text-xs text-slate-400">(Rp 4,8 M / Omzet) × Laba Bersih</div>
+                  </div>
+                  <span id="b_res_pkp_fas" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2.5 px-3 rounded-lg bg-slate-50/70 flex items-center justify-between">
+                  <span class="text-slate-700">Pajak Fasilitas: <strong class="text-slate-900">50% × 22% = 11%</strong></span>
+                  <span id="b_res_pajak_fas" class="font-bold text-amber-700">Rp 0</span>
+                </div>
+                <div class="py-2.5 px-3 rounded-lg bg-slate-50 flex items-center justify-between">
+                  <div>
+                    <div class="text-slate-700 font-medium">Bagian PKP Non-Fasilitas:</div>
+                    <div class="text-xs text-slate-400">PKP Total – PKP Fasilitas</div>
+                  </div>
+                  <span id="b_res_pkp_non" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between">
+                  <span class="text-slate-700">Pajak Non-Fasilitas: <strong class="text-slate-900">Tarif Umum 22%</strong></span>
+                  <span id="b_res_pajak_non" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-3 px-3 rounded-xl bg-theme-soft border border-amber-200/70 flex items-center justify-between font-extrabold text-base mt-2">
+                  <span class="text-slate-900">Total PPh Badan Terutang</span>
+                  <span id="b_res_total_bottom" class="text-slate-900">Rp 0</span>
+                </div>
+                <div class="py-2 px-2 flex items-center justify-between text-xs text-slate-600">
+                  <span>Dikurangi: Kredit Pajak PPh Pasal 25</span>
+                  <span id="b_res_kredit_val" class="font-semibold text-rose-600">- Rp 0</span>
+                </div>
+              </div>
+
+              <!-- Dasar Regulasi & Blok Tanda Tangan -->
+              <div class="mt-6 pt-5 border-t border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+                  <div class="text-xs text-slate-600 space-y-1">
+                    <div class="font-bold text-slate-800">Dasar Regulasi &amp; Ketentuan:</div>
+                    <div>• UU No. 36 Tahun 2008 stdd UU No. 7 Tahun 2021 (UU HPP) Pasal 31E</div>
+                    <div>• Surat Edaran Dirjen Pajak SE-02/PJ/2015</div>
+                    <div class="text-[11px] text-slate-400 pt-0.5">Fasilitas pengurangan tarif 50% × 22% = 11% atas PKP dari peredaran bruto s.d. Rp 4,8 Miliar.</div>
+                  </div>
+
+                  <div class="text-right self-end shrink-0">
+                    <div id="b_sig_date" class="text-xs text-slate-600">20 November 2026</div>
+                    <div class="text-xs text-slate-500 mb-10">Bagian Keuangan &amp; Perpajakan</div>
+                    <div class="text-xs text-slate-700 font-medium">( ...................................... )</div>
+                    <div id="b_sig_company" class="text-xs font-bold text-slate-900 mt-0.5">Perusahaan Anda</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 4: REFERENSI TARIF & PTKP (PMK 101/2016, UU HPP, PP 58/2023)
+           ===================================================================== -->
+      <section id="tab-referensi" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Tabel PTKP Lengkap TK/0 s.d. K/I/3 -->
+          <div class="panel-card p-5 sm:p-6">
+            <h3 class="text-base font-bold text-slate-900 mb-1">Tabel PTKP Lengkap &amp; Kategori TER</h3>
+            <p class="text-xs text-slate-500 mb-3">Sesuai PMK No. 101/PMK.010/2016 dan PP No. 58 Tahun 2023</p>
+            <div class="overflow-x-auto border border-slate-200 rounded-xl">
+              <table class="w-full text-xs sm:text-sm text-left">
+                <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-700">
+                  <tr>
+                    <th class="py-2.5 px-3">Status</th>
+                    <th class="py-2.5 px-3">Keterangan</th>
+                    <th class="py-2.5 px-3 text-right">PTKP Setahun</th>
+                    <th class="py-2.5 px-3 text-center">Kategori TER</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr><td class="py-2 px-3 font-semibold">TK/0</td><td class="py-2 px-3 text-slate-600">Tidak Kawin, 0 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 54.000.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-xs">TER A</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">TK/1</td><td class="py-2 px-3 text-slate-600">Tidak Kawin, 1 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 58.500.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-xs">TER A</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/0</td><td class="py-2 px-3 text-slate-600">Kawin, 0 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 58.500.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-xs">TER A</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">TK/2</td><td class="py-2 px-3 text-slate-600">Tidak Kawin, 2 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 63.000.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">TER B</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">TK/3</td><td class="py-2 px-3 text-slate-600">Tidak Kawin, 3 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 67.500.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">TER B</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/1</td><td class="py-2 px-3 text-slate-600">Kawin, 1 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 63.000.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">TER B</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/2</td><td class="py-2 px-3 text-slate-600">Kawin, 2 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 67.500.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">TER B</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/3</td><td class="py-2 px-3 text-slate-600">Kawin, 3 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 72.000.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">TER C</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/I/0</td><td class="py-2 px-3 text-slate-600">Kawin Penghasilan Digabung, 0 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 112.500.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-xs">TER A</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/I/1</td><td class="py-2 px-3 text-slate-600">Kawin Penghasilan Digabung, 1 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 117.000.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">TER B</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/I/2</td><td class="py-2 px-3 text-slate-600">Kawin Penghasilan Digabung, 2 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 121.500.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">TER B</span></td></tr>
+                  <tr><td class="py-2 px-3 font-semibold">K/I/3</td><td class="py-2 px-3 text-slate-600">Kawin Penghasilan Digabung, 3 Tanggungan</td><td class="py-2 px-3 text-right font-medium">Rp 126.000.000</td><td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">TER C</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tarif Progresif Pasal 17 & Ketentuan Pasal 31E -->
+          <div class="space-y-6">
+            <div class="panel-card p-5 sm:p-6">
+              <h3 class="text-base font-bold text-slate-900 mb-3">Tarif Progresif Pasal 17 (UU HPP)</h3>
+              <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                <table class="w-full text-xs sm:text-sm text-left">
+                  <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-700">
+                    <tr>
+                      <th class="py-2.5 px-3">Lapisan Penghasilan Kena Pajak (PKP)</th>
+                      <th class="py-2.5 px-3 text-right">Tarif</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    <tr><td class="py-2.5 px-3">Rp 0 s.d. Rp 60.000.000</td><td class="py-2.5 px-3 text-right font-bold text-slate-900">5%</td></tr>
+                    <tr><td class="py-2.5 px-3">&gt; Rp 60.000.000 s.d. Rp 250.000.000</td><td class="py-2.5 px-3 text-right font-bold text-slate-900">15%</td></tr>
+                    <tr><td class="py-2.5 px-3">&gt; Rp 250.000.000 s.d. Rp 500.000.000</td><td class="py-2.5 px-3 text-right font-bold text-slate-900">25%</td></tr>
+                    <tr><td class="py-2.5 px-3">&gt; Rp 500.000.000 s.d. Rp 5.000.000.000</td><td class="py-2.5 px-3 text-right font-bold text-slate-900">30%</td></tr>
+                    <tr><td class="py-2.5 px-3">&gt; Rp 5.000.000.000</td><td class="py-2.5 px-3 text-right font-bold text-slate-900">35%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel-card p-5 sm:p-6 space-y-2 text-xs sm:text-sm text-slate-600">
+              <h3 class="text-base font-bold text-slate-900 mb-2">Ketentuan Biaya Jabatan &amp; PPh Badan Pasal 31E</h3>
+              <div>• <strong>Biaya Jabatan (PMK 168/2023):</strong> 5% dari penghasilan bruto setahun, maksimal <strong>Rp 6.000.000/tahun</strong> (Rp 500.000/bulan).</div>
+              <div>• <strong>Pembulatan PKP:</strong> PKP dibulatkan ke bawah hingga ribuan penuh sebelum dikalikan tarif Pasal 17.</div>
+              <div>• <strong>Fasilitas PPh Badan Pasal 31E:</strong> Wajib Pajak Badan dalam negeri dengan peredaran bruto sampai dengan <strong>Rp 50 Miliar</strong> mendapat pengurangan tarif sebesar <strong>50% × 22% = 11%</strong> atas bagian PKP dari peredaran bruto sampai dengan <strong>Rp 4,8 Miliar</strong>.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Lengkap Lapisan TER PP 58/2023 -->
+        <div class="panel-card p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Tabel Lengkap Tarif Efektif Rata-Rata (TER PP No. 58 Tahun 2023)</h3>
+              <p class="text-xs text-slate-500">Mencakup seluruh 44 lapisan Kategori A, 40 lapisan Kategori B, dan 41 lapisan Kategori C.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="refTerCat" onchange="renderTerReferenceTable()" class="tax-input-sm font-semibold">
+                <option value="A">Kategori A — 44 Lapisan (TK/0, TK/1, K/0, K/I/0)</option>
+                <option value="B">Kategori B — 40 Lapisan (TK/2, TK/3, K/1, K/2, K/I/1, K/I/2)</option>
+                <option value="C">Kategori C — 41 Lapisan (K/3, K/I/3)</option>
+              </select>
+              <input type="text" inputmode="numeric" id="refTerSearch" oninput="formatInputElement(this); renderTerReferenceTable();" placeholder="Cari nominal bruto..." class="tax-input-sm w-44" />
+            </div>
+          </div>
+          <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-xs sm:text-sm text-left">
+              <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 font-bold text-slate-700">
+                <tr>
+                  <th class="py-2.5 px-3 w-14">No</th>
+                  <th class="py-2.5 px-3">Lapisan Penghasilan Bruto Bulanan</th>
+                  <th class="py-2.5 px-3 text-right">Tarif TER</th>
+                </tr>
+              </thead>
+              <tbody id="refTerTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       3. MODAL RINCIAN PERHITUNGAN PAJAK PER BULAN (JANUARI – DESEMBER)
+       ========================================================================= -->
+  <div id="monthlyModal" class="fixed inset-0 z-40 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 bg-theme-primary text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Rincian Perhitungan PPh 21 Per Bulan (Januari – Desember)</h3>
+          <p id="modalMonthEmpInfo" class="text-xs text-theme-accent mt-0.5">Karyawan: -</p>
+        </div>
+        <button onclick="closeModal('monthlyModal')" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold">✕</button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4">
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+          <strong>Simulasi 12 Bulan (PP 58/2023):</strong> Masa Januari–November dihitung memakai Tarif Efektif Bulanan (TER). Anda dapat mengisi/mengubah kolom <strong>THR / Bonus Bulan</strong> pada bulan tertentu untuk melihat dampak kenaikan tarif TER pada bulan tersebut, sementara masa Desember otomatis menghitung rekonsiliasi Pasal 17 Setahun.
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-xs sm:text-sm text-left border-collapse min-w-[740px]">
+            <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-700">
+              <tr>
+                <th class="py-2.5 px-3">Masa Pajak</th>
+                <th class="py-2.5 px-3 text-right">Gaji + Tunj + BPJS</th>
+                <th class="py-2.5 px-3 text-right">THR / Bonus Bulan Ini</th>
+                <th class="py-2.5 px-3 text-right">Total Bruto</th>
+                <th class="py-2.5 px-3 text-center">Metode / Tarif TER</th>
+                <th class="py-2.5 px-3 text-right">PPh 21 Terutang</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyBreakdownBody" class="divide-y divide-slate-100"></tbody>
+            <tfoot id="monthlyBreakdownFoot" class="bg-slate-50 border-t-2 border-slate-200 font-bold text-slate-900"></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('monthlyModal')" class="px-4 py-2 rounded-xl bg-theme-primary text-white text-xs sm:text-sm font-semibold">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. MODAL SETELAN (MULTI-PROJECT KLIEN, BAHASA & CUSTOM WARNA)
+       ========================================================================= -->
+  <div id="settingsModal" class="fixed inset-0 z-40 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 bg-theme-primary text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold" data-i18n="settingsTitle">Setelan Aplikasi &amp; Manajemen Project Klien</h3>
+          <p class="text-xs text-slate-300 mt-0.5" data-i18n="settingsSub">Kelola banyak perusahaan klien, tahun/masa pajak, bahasa tampilan, dan tema warna kalkulator.</p>
+        </div>
+        <button onclick="closeModal('settingsModal')" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-6">
+        <!-- Section 1: Identitas Project Aktif & Multi-Project Klien -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-slate-900" data-i18n="projectMgmtHeader">1. Identitas &amp; Manajemen Project Perusahaan Klien</h4>
+            <span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">Tersimpan Otomatis</span>
+          </div>
+
+          <!-- Edit Project Aktif -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+            <div class="text-xs font-bold text-slate-700">Detail Perusahaan Project Aktif:</div>
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+              <div class="sm:col-span-5">
+                <label class="block text-[11px] font-medium text-slate-600 mb-1">Nama Perusahaan</label>
+                <input type="text" id="set_activeCompanyName" oninput="updateActiveCompanyName(this.value); renderProjectListInModal();" placeholder="Ketik Nama Perusahaan Anda..." class="tax-input-sm w-full" />
+              </div>
+              <div class="sm:col-span-3">
+                <label class="block text-[11px] font-medium text-slate-600 mb-1">NPWP Badan</label>
+                <input type="text" id="set_activeCompanyNpwp" oninput="updateActiveProjectMeta('npwp', this.value)" placeholder="NPWP Perusahaan..." class="tax-input-sm w-full" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-medium text-slate-600 mb-1">Tahun Pajak</label>
+                <input type="text" id="set_activeTaxYear" oninput="updateActiveProjectMeta('taxYear', this.value)" placeholder="2025" class="tax-input-sm w-full" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-medium text-slate-600 mb-1">Masa Pajak</label>
+                <input type="text" id="set_activeTaxPeriod" oninput="updateActiveProjectMeta('taxPeriod', this.value)" placeholder="Jan–Des" class="tax-input-sm w-full" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Tambah Project Baru -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-1">
+            <input type="text" id="newProjectName" placeholder="Nama Perusahaan Klien Baru..." class="tax-input sm:col-span-6 text-sm" />
+            <input type="text" id="newProjectNpwp" placeholder="NPWP Badan (opsional)..." class="tax-input sm:col-span-3 text-sm" />
+            <button onclick="createNewProject()" class="sm:col-span-3 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+              + Tambah Project Baru
+            </button>
+          </div>
+
+          <div id="projectListContainer" class="space-y-2 max-h-44 overflow-y-auto pr-1"></div>
+        </div>
+
+        <hr class="border-slate-200" />
+
+        <!-- Section 2: Pengaturan Bahasa -->
+        <div class="space-y-2.5">
+          <h4 class="text-sm font-bold text-slate-900" data-i18n="langSettingHeader">2. Bahasa Antarmuka (Language)</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="langBtn-id" onclick="setLanguage('id')" class="py-2.5 px-4 rounded-xl border-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition">
+              <span>🇮🇩</span> Bahasa Indonesia
+            </button>
+            <button id="langBtn-en" onclick="setLanguage('en')" class="py-2.5 px-4 rounded-xl border-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition">
+              <span>🇬🇧</span> English
+            </button>
+          </div>
+        </div>
+
+        <hr class="border-slate-200" />
+
+        <!-- Section 3: Custom Warna Kalkulator -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-slate-900" data-i18n="colorSettingHeader">3. Custom Warna Kalkulator</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            <button onclick="applyThemePreset('#071b34', '#0e2e57', '#facc15', '#ca8a04', '#fefce8')" class="p-2 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center gap-2 text-xs font-semibold">
+              <span class="w-4 h-4 rounded-full bg-[#071b34] border border-amber-400 shrink-0"></span>
+              <span>Navy Klasik</span>
+            </button>
+            <button onclick="applyThemePreset('#064e3b', '#047857', '#fde047', '#ca8a04', '#ecfdf5')" class="p-2 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center gap-2 text-xs font-semibold">
+              <span class="w-4 h-4 rounded-full bg-[#064e3b] border border-yellow-300 shrink-0"></span>
+              <span>Hijau Pajak</span>
+            </button>
+            <button onclick="applyThemePreset('#1e1b4b', '#312e81', '#38bdf8', '#0284c7', '#eef2ff')" class="p-2 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center gap-2 text-xs font-semibold">
+              <span class="w-4 h-4 rounded-full bg-[#1e1b4b] border border-sky-300 shrink-0"></span>
+              <span>Indigo Modern</span>
+            </button>
+            <button onclick="applyThemePreset('#4c0519', '#881337', '#fda4af', '#e11d48', '#fff1f2')" class="p-2 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center gap-2 text-xs font-semibold">
+              <span class="w-4 h-4 rounded-full bg-[#4c0519] border border-rose-300 shrink-0"></span>
+              <span>Merah Marun</span>
+            </button>
+            <button onclick="applyThemePreset('#134e4a', '#0f766e', '#5eead4', '#0d9488', '#f0fdfa')" class="p-2 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center gap-2 text-xs font-semibold">
+              <span class="w-4 h-4 rounded-full bg-[#134e4a] border border-teal-300 shrink-0"></span>
+              <span>Teal Pro</span>
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-4 pt-1">
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-700">
+              <span>Warna Utama:</span>
+              <input type="color" id="customPrimaryPicker" value="#071b34" onchange="updateCustomColor()" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
+            </label>
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-700">
+              <span>Warna Aksen:</span>
+              <input type="color" id="customAccentPicker" value="#facc15" onchange="updateCustomColor()" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('settingsModal')" class="px-5 py-2 rounded-xl bg-theme-primary text-white text-xs sm:text-sm font-semibold">Selesai &amp; Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. MODAL PILIHAN CETAK PDF UKURAN A4 (1 JENIS PPh = 1 HALAMAN PENUH)
+       ========================================================================= -->
+  <div id="printModal" class="fixed inset-0 z-40 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 bg-theme-primary text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Cetak Laporan Perpajakan (Ukuran A4 Presisi)</h3>
+          <p class="text-xs text-slate-300 mt-0.5">Setiap jenis laporan PPh dicetak 1 halaman A4 penuh tanpa terpotong.</p>
+        </div>
+        <button onclick="closeModal('printModal')" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5">
+        <!-- 1. Jenis Laporan -->
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-2">1. Pilih Jenis Laporan yang Akan Dicetak:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="radio" name="printScope" value="all" checked class="mt-0.5 w-4 h-4 accent-slate-900" />
+              <div>
+                <div class="text-xs font-bold text-slate-900">Seluruh Laporan (3 Halaman A4)</div>
+                <div class="text-[11px] text-slate-500">PPh 21 Bulanan + Tahunan + PPh Badan</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="radio" name="printScope" value="bulanan" class="mt-0.5 w-4 h-4 accent-slate-900" />
+              <div>
+                <div class="text-xs font-bold text-slate-900">PPh 21 Bulanan (TER) Saja</div>
+                <div class="text-[11px] text-slate-500">1 Halaman A4 penuh</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="radio" name="printScope" value="tahunan" class="mt-0.5 w-4 h-4 accent-slate-900" />
+              <div>
+                <div class="text-xs font-bold text-slate-900">PPh 21 Tahunan (1721-A1) Saja</div>
+                <div class="text-[11px] text-slate-500">1 Halaman A4 penuh</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="radio" name="printScope" value="badan" class="mt-0.5 w-4 h-4 accent-slate-900" />
+              <div>
+                <div class="text-xs font-bold text-slate-900">PPh Badan (Pasal 31E) Saja</div>
+                <div class="text-[11px] text-slate-500">1 Halaman A4 penuh</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Pilihan Karyawan yang Dicetak -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs sm:text-sm font-bold text-slate-800">2. Pilih Karyawan untuk Laporan PPh 21:</label>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="toggleSelectAllEmployees(true); renderPrintEmployeeChecklist();" class="text-[11px] font-semibold text-blue-600 hover:underline">Pilih Semua</button>
+              <span class="text-slate-300">|</span>
+              <button type="button" onclick="toggleSelectAllEmployees(false); renderPrintEmployeeChecklist();" class="text-[11px] font-semibold text-slate-500 hover:underline">Kosongkan</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="radio" name="printEmpMode" value="all" checked onchange="renderPrintEmployeeChecklist()" class="w-4 h-4 accent-slate-900" />
+              <div class="text-xs font-bold text-slate-900">Seluruh Karyawan (<span id="printAllEmpCount">1</span>)</div>
+            </label>
+            <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="radio" name="printEmpMode" value="selected" onchange="renderPrintEmployeeChecklist()" class="w-4 h-4 accent-slate-900" />
+              <div class="text-xs font-bold text-slate-900">Hanya Karyawan Dicentang (<span id="printSelectedEmpCount">1</span>)</div>
+            </label>
+          </div>
+
+          <!-- Daftar Checkbox Karyawan Langsung di Modal Cetak -->
+          <div id="printEmpChecklistBox" class="max-h-40 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 bg-slate-50/50"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2.5">
+        <button onclick="closeModal('printModal')" class="px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs sm:text-sm font-semibold text-slate-700">Batal</button>
+        <button onclick="executePrintA4()" class="px-5 py-2 rounded-xl bg-theme-primary text-theme-accent text-xs sm:text-sm font-bold shadow-sm">
+          🖨️ Cetak / Simpan PDF (A4)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-slate-700"></div>
+
+  <!-- =========================================================================
+       6. PRINT AREA (KHUSUS CETAK PDF UKURAN A4: 1 PPh = 1 HALAMAN PENUH)
+       ========================================================================= -->
+  <div id="printArea"></div>
+
+  <!-- =========================================================================
+       7. JAVASCRIPT ENGINE: TER PP 58/2023, PASAL 17, PASAL 31E & MULTI-PROJECT
+       ========================================================================= -->
+  <script>
+    // =========================================================================
+    // A. TABEL TARIF EFEKTIF RATA-RATA (TER PP No. 58 Tahun 2023)
+    //    Kategori A (44 Lapisan), Kategori B (40 Lapisan), Kategori C (41 Lapisan)
+    // =========================================================================
+    const TER_TABLE_A = [
+      [5400000, 0], [5650000, 0.0025], [5950000, 0.005], [6300000, 0.0075],
+      [6750000, 0.01], [7500000, 0.0125], [8550000, 0.015], [9650000, 0.0175],
+      [10050000, 0.02], [10350000, 0.0225], [10700000, 0.025], [11050000, 0.03],
+      [11600000, 0.035], [12500000, 0.04], [13750000, 0.05], [15100000, 0.06],
+      [16950000, 0.07], [19750000, 0.08], [24150000, 0.09], [26450000, 0.10],
+      [28000000, 0.11], [30050000, 0.12], [32400000, 0.13], [35400000, 0.14],
+      [39100000, 0.15], [43850000, 0.16], [47800000, 0.17], [51400000, 0.18],
+      [56300000, 0.19], [62200000, 0.20], [68600000, 0.21], [77500000, 0.22],
+      [89000000, 0.23], [103000000, 0.24], [125000000, 0.25], [157000000, 0.26],
+      [206000000, 0.27], [337000000, 0.28], [454000000, 0.29], [550000000, 0.30],
+      [695000000, 0.31], [910000000, 0.32], [1400000000, 0.33], [Infinity, 0.34]
+    ];
+
+    const TER_TABLE_B = [
+      [6200000, 0], [6500000, 0.0025], [6850000, 0.005], [7300000, 0.0075],
+      [9200000, 0.01], [10750000, 0.015], [11250000, 0.02], [11600000, 0.025],
+      [12600000, 0.03], [13600000, 0.04], [14950000, 0.05], [16400000, 0.06],
+      [18450000, 0.07], [21850000, 0.08], [26000000, 0.09], [27700000, 0.10],
+      [29350000, 0.11], [31450000, 0.12], [33950000, 0.13], [37100000, 0.14],
+      [41100000, 0.15], [45800000, 0.16], [49500000, 0.17], [53800000, 0.18],
+      [58500000, 0.19], [64000000, 0.20], [71000000, 0.21], [80000000, 0.22],
+      [93000000, 0.23], [109000000, 0.24], [129000000, 0.25], [163000000, 0.26],
+      [211000000, 0.27], [374000000, 0.28], [459000000, 0.29], [555000000, 0.30],
+      [704000000, 0.31], [957000000, 0.32], [1405000000, 0.33], [Infinity, 0.34]
+    ];
+
+    const TER_TABLE_C = [
+      [6600000, 0], [6950000, 0.0025], [7350000, 0.005], [7800000, 0.0075],
+      [8850000, 0.01], [9800000, 0.0125], [10950000, 0.015], [11200000, 0.0175],
+      [12050000, 0.02], [12950000, 0.03], [14150000, 0.04], [15550000, 0.05],
+      [17050000, 0.06], [19500000, 0.07], [22700000, 0.08], [26600000, 0.09],
+      [28100000, 0.10], [30100000, 0.11], [32600000, 0.12], [35400000, 0.13],
+      [38900000, 0.14], [43000000, 0.15], [47400000, 0.16], [51200000, 0.17],
+      [55800000, 0.18], [60400000, 0.19], [66700000, 0.20], [74500000, 0.21],
+      [83200000, 0.22], [95600000, 0.23], [110000000, 0.24], [134000000, 0.25],
+      [169000000, 0.26], [221000000, 0.27], [390000000, 0.28], [463000000, 0.29],
+      [561000000, 0.30], [709000000, 0.31], [965000000, 0.32], [1419000000, 0.33],
+      [Infinity, 0.34]
+    ];
+
+    const PTKP_MAP = {
+      'TK/0':  { amount: 54000000, ter: 'A' },
+      'TK/1':  { amount: 58500000, ter: 'A' },
+      'K/0':   { amount: 58500000, ter: 'A' },
+      'TK/2':  { amount: 63000000, ter: 'B' },
+      'TK/3':  { amount: 67500000, ter: 'B' },
+      'K/1':   { amount: 63000000, ter: 'B' },
+      'K/2':   { amount: 67500000, ter: 'B' },
+      'K/3':   { amount: 72000000, ter: 'C' },
+      'K/I/0': { amount: 112500000, ter: 'A' },
+      'K/I/1': { amount: 117000000, ter: 'B' },
+      'K/I/2': { amount: 121500000, ter: 'B' },
+      'K/I/3': { amount: 126000000, ter: 'C' }
+    };
+
+    function getTerRate(ptkp, brutoBulanan) {
+      const cat = (PTKP_MAP[ptkp] || PTKP_MAP['TK/0']).ter;
+      const table = cat === 'A' ? TER_TABLE_A : cat === 'B' ? TER_TABLE_B : TER_TABLE_C;
+      for (let i = 0; i < table.length; i++) {
+        if (brutoBulanan <= table[i][0]) {
+          return { rate: table[i][1], category: cat };
+        }
+      }
+      return { rate: 0.34, category: cat };
+    }
+
+    function calcPasal17(pkp) {
+      if (pkp <= 0) return 0;
+      let tax = 0;
+      let rem = pkp;
+      const brackets = [
+        { limit: 60000000, rate: 0.05 },
+        { limit: 190000000, rate: 0.15 },
+        { limit: 250000000, rate: 0.25 },
+        { limit: 4500000000, rate: 0.30 },
+        { limit: Infinity, rate: 0.35 }
+      ];
+      for (const b of brackets) {
+        if (rem <= 0) break;
+        const taxable = Math.min(rem, b.limit);
+        tax += taxable * b.rate;
+        rem -= taxable;
+      }
+      return Math.round(tax);
+    }
+
+    // =========================================================================
+    // B. DATA TEMPLATE BERSIH (TANPA NAMA PRIBADI & TANPA NAMA PERUSAHAAN DEFAULT)
+    // =========================================================================
+    function createEmptyEmployeeTemplate(idSuffix) {
+      return {
+        id: 'emp-' + (idSuffix || Date.now()),
+        selected: true,
+        nama: '',
+        npwp: '',
+        ptkp: 'TK/0',
+        gajiBulanan: 0,
+        tunjanganBulanan: 0,
+        thrBulanan: 0,
+        gajiDes: 0,
+        gajiJanNov: 0,
+        tunjDes: 0,
+        bpjsDes: 0,
+        tunjJanNov: 0,
+        bpjsJanNov: 0,
+        thrSetahun: 0,
+        pphJanNov: 0,
+        monthlyThrOverrides: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      };
+    }
+
+    function createEmptyProjectTemplate(idSuffix) {
+      const firstEmp = createEmptyEmployeeTemplate('1-' + (idSuffix || Date.now()));
+      return {
+        id: 'proj-' + (idSuffix || Date.now()),
+        name: '',
+        npwp: '',
+        taxYear: '2025',
+        taxPeriod: 'Jan–Des',
+        activeEmpId: firstEmp.id,
+        employees: [firstEmp],
+        corporate: {
+          omzet: 0,
+          omzetLain: 0,
+          laba: 0,
+          kredit25: 0
+        }
+      };
+    }
+
+    // =========================================================================
+    // C. STATE & LOCALSTORAGE MANAGEMENT (KEY BARU: sahabat_pajak_clean_v1)
+    // =========================================================================
+    const STORAGE_KEY = 'sahabat_pajak_clean_v1';
+
+    let appData = {
+      lang: 'id',
+      theme: {
+        primary: '#071b34',
+        primaryHover: '#0e2e57',
+        accent: '#facc15',
+        accentDark: '#ca8a04',
+        soft: '#fefce8'
+      },
+      activeProjectId: '',
+      projects: []
+    };
+
+    let state = {
+      activeTab: 'bulanan',
+      activeEmpId: '',
+      modalEmpId: ''
+    };
+
+    function loadAppData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.projects) && parsed.projects.length > 0) {
+            appData = parsed;
+          }
+        }
+      } catch (e) {
+        console.warn('Gagal memuat localStorage:', e);
+      }
+
+      if (!appData.projects || appData.projects.length === 0) {
+        const defaultProj = createEmptyProjectTemplate('init');
+        appData.projects = [defaultProj];
+        appData.activeProjectId = defaultProj.id;
+      }
+
+      const proj = getActiveProject();
+      state.activeEmpId = proj.activeEmpId || (proj.employees[0] ? proj.employees[0].id : '');
+    }
+
+    function saveAppData() {
+      try {
+        const proj = getActiveProject();
+        if (proj) proj.activeEmpId = state.activeEmpId;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (e) {
+        console.warn('Gagal menyimpan localStorage:', e);
+      }
+    }
+
+    function getActiveProject() {
+      let proj = appData.projects.find(p => p.id === appData.activeProjectId);
+      if (!proj) {
+        proj = appData.projects[0];
+        appData.activeProjectId = proj.id;
+      }
+      return proj;
+    }
+
+    function getActiveEmployee() {
+      const proj = getActiveProject();
+      let emp = proj.employees.find(e => e.id === state.activeEmpId);
+      if (!emp && proj.employees.length > 0) {
+        emp = proj.employees[0];
+        state.activeEmpId = emp.id;
+      }
+      return emp;
+    }
+
+    function getDisplayCompanyName(proj) {
+      const n = (proj && proj.name ? proj.name.trim() : '');
+      if (n) return n;
+      return appData.lang === 'en' ? 'Your Company' : 'Perusahaan Anda';
+    }
+
+    // =========================================================================
+    // D. AUTO-FORMAT TITIK RIBUAN REAL-TIME SAAT MENGETIK ANGKA
+    // =========================================================================
+    function formatNumberDots(num) {
+      const n = Math.round(Number(num) || 0);
+      if (n === 0) return '0';
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function parseFormattedNumber(str) {
+      if (typeof str === 'number') return Math.round(str);
+      if (!str) return 0;
+      const cleaned = String(str).replace(/[^\d]/g, '');
+      return cleaned ? parseInt(cleaned, 10) : 0;
+    }
+
+    function formatRupiah(num) {
+      const n = Math.round(Number(num) || 0);
+      const sign = n < 0 ? '- ' : '';
+      return sign + 'Rp ' + Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function formatInputElement(el) {
+      const rawDigits = el.value.replace(/[^\d]/g, '');
+      if (!rawDigits) {
+        el.value = '0';
+        return 0;
+      }
+      const numVal = parseInt(rawDigits, 10);
+      el.value = formatNumberDots(numVal);
+      return numVal;
+    }
+
+    function handleEmployeeNumericInput(el, field) {
+      const numVal = formatInputElement(el);
+      const emp = getActiveEmployee();
+      if (!emp) return;
+      emp[field] = numVal;
+
+      if (field === 'gajiBulanan') {
+        emp.gajiDes = numVal;
+        emp.gajiJanNov = numVal * 11;
+      } else if (field === 'gajiDes') {
+        emp.gajiBulanan = numVal;
+      } else if (field === 'tunjanganBulanan') {
+        emp.tunjDes = numVal;
+        emp.tunjJanNov = numVal * 11;
+      } else if (field === 'thrBulanan') {
+        emp.thrSetahun = numVal;
+      }
+
+      saveAppData();
+      recalculateAll(false);
+    }
+
+    function handleCorpNumericInput(el, field) {
+      const numVal = formatInputElement(el);
+      const proj = getActiveProject();
+      proj.corporate[field] = numVal;
+      saveAppData();
+      recalculateAll(false);
+    }
+
+    // =========================================================================
+    // E. KALKULASI PAJAK (PPh 21 BULANAN TER, TAHUNAN 1721-A1, BADAN 31E)
+    // =========================================================================
+    function computeEmployeeMonthly(emp) {
+      const bruto = (emp.gajiBulanan || 0) + (emp.tunjanganBulanan || 0) + (emp.thrBulanan || 0);
+      const { rate, category } = getTerRate(emp.ptkp, bruto);
+      const pph = Math.round(bruto * rate);
+      const thp = bruto - pph;
+      return { bruto, rate, category, pph, thp };
+    }
+
+    function computeEmployeeAnnual(emp) {
+      const brutoTeratur = (emp.gajiDes || 0) + (emp.gajiJanNov || 0) +
+                           (emp.tunjDes || 0) + (emp.tunjJanNov || 0) +
+                           (emp.bpjsDes || 0) + (emp.bpjsJanNov || 0);
+      const thr = emp.thrSetahun || 0;
+      const brutoTotal = brutoTeratur + thr;
+      const biayaJabatan = Math.min(Math.round(brutoTotal * 0.05), 6000000);
+      const neto = Math.max(0, brutoTotal - biayaJabatan);
+      const ptkpAmount = (PTKP_MAP[emp.ptkp] || PTKP_MAP['TK/0']).amount;
+      const pkpRaw = Math.max(0, neto - ptkpAmount);
+      const pkpRounded = Math.floor(pkpRaw / 1000) * 1000;
+      const pphSetahun = calcPasal17(pkpRounded);
+      const pphJanNov = emp.pphJanNov || 0;
+      const pphDesember = pphSetahun - pphJanNov;
+
+      return {
+        brutoTeratur,
+        thr,
+        brutoTotal,
+        biayaJabatan,
+        neto,
+        ptkpAmount,
+        pkpRounded,
+        pphSetahun,
+        pphJanNov,
+        pphDesember
+      };
+    }
+
+    function computeCorporate(corp) {
+      const totalOmzet = (corp.omzet || 0) + (corp.omzetLain || 0);
+      const laba = corp.laba || 0;
+      const kredit25 = corp.kredit25 || 0;
+
+      let pkpFasilitas = 0;
+      let pkpNonFasilitas = 0;
+
+      if (laba > 0 && totalOmzet > 0) {
+        if (totalOmzet <= 4800000000) {
+          pkpFasilitas = laba;
+          pkpNonFasilitas = 0;
+        } else if (totalOmzet <= 50000000000) {
+          pkpFasilitas = (4800000000 / totalOmzet) * laba;
+          pkpNonFasilitas = Math.max(0, laba - pkpFasilitas);
+        } else {
+          pkpFasilitas = 0;
+          pkpNonFasilitas = laba;
+        }
+      }
+
+      const pajakFasilitas = pkpFasilitas * 0.11; // 50% x 22%
+      const pajakNonFasilitas = pkpNonFasilitas * 0.22;
+      const totalPph = Math.round(pajakFasilitas + pajakNonFasilitas);
+      const pph29 = totalPph - kredit25;
+
+      return {
+        totalOmzet,
+        laba,
+        kredit25,
+        pkpFasilitas: Math.round(pkpFasilitas),
+        pkpNonFasilitas: Math.round(pkpNonFasilitas),
+        pajakFasilitas: Math.round(pajakFasilitas),
+        pajakNonFasilitas: Math.round(pajakNonFasilitas),
+        totalPph,
+        pph29
+      };
+    }
+
+    // =========================================================================
+    // F. SINKRONISASI FORM & RENDER KOMPONEN UI
+    // =========================================================================
+    function populateFormsFromActiveState() {
+      const proj = getActiveProject();
+      const emp = getActiveEmployee();
+
+      // Header Company Input & Project Select
+      document.getElementById('headerCompanyInput').value = proj.name || '';
+      const headerSel = document.getElementById('headerProjectSelect');
+      headerSel.innerHTML = appData.projects.map((p, idx) => {
+        const label = p.name && p.name.trim() ? p.name.trim() : `Project #${idx + 1} (Belum dinamai)`;
+        return `<option value="${p.id}" ${p.id === proj.id ? 'selected' : ''}>${escapeHtml(label)}</option>`;
+      }).join('');
+
+      // Employee Selectors (Bulanan & Tahunan)
+      const empOptions = proj.employees.map((e, idx) => {
+        const empLabel = e.nama && e.nama.trim() ? e.nama.trim() : `Karyawan #${idx + 1} (Belum diisi)`;
+        return `<option value="${e.id}" ${e.id === emp.id ? 'selected' : ''}>${idx + 1}. ${escapeHtml(empLabel)} (${e.ptkp})</option>`;
+      }).join('');
+
+      document.getElementById('monthlyEmpSelector').innerHTML = empOptions;
+      document.getElementById('annualEmpSelector').innerHTML = empOptions;
+
+      if (emp) {
+        // Tab 1 Inputs
+        document.getElementById('m_nama').value = emp.nama || '';
+        document.getElementById('m_npwp').value = emp.npwp || '';
+        document.getElementById('m_ptkp').value = emp.ptkp || 'TK/0';
+        document.getElementById('m_gaji').value = formatNumberDots(emp.gajiBulanan);
+        document.getElementById('m_tunjangan').value = formatNumberDots(emp.tunjanganBulanan);
+        document.getElementById('m_thr').value = formatNumberDots(emp.thrBulanan);
+
+        // Tab 2 Inputs
+        document.getElementById('a_nama').value = emp.nama || '';
+        document.getElementById('a_npwp').value = emp.npwp || '';
+        document.getElementById('a_ptkp').value = emp.ptkp || 'TK/0';
+        document.getElementById('a_gajiDes').value = formatNumberDots(emp.gajiDes);
+        document.getElementById('a_gajiJanNov').value = formatNumberDots(emp.gajiJanNov);
+        document.getElementById('a_tunjDes').value = formatNumberDots(emp.tunjDes);
+        document.getElementById('a_bpjsDes').value = formatNumberDots(emp.bpjsDes);
+        document.getElementById('a_tunjJanNov').value = formatNumberDots(emp.tunjJanNov);
+        document.getElementById('a_bpjsJanNov').value = formatNumberDots(emp.bpjsJanNov);
+        document.getElementById('a_thrSetahun').value = formatNumberDots(emp.thrSetahun);
+        document.getElementById('a_pphJanNov').value = formatNumberDots(emp.pphJanNov);
+      }
+
+      // Tab 3 Corporate Inputs
+      document.getElementById('b_omzet').value = formatNumberDots(proj.corporate.omzet);
+      document.getElementById('b_omzetLain').value = formatNumberDots(proj.corporate.omzetLain);
+      document.getElementById('b_laba').value = formatNumberDots(proj.corporate.laba);
+      document.getElementById('b_kredit25').value = formatNumberDots(proj.corporate.kredit25);
+      document.getElementById('b_sig_company').textContent = getDisplayCompanyName(proj);
+    }
+
+    function recalculateAll(showNotif = false) {
+      const proj = getActiveProject();
+      const emp = getActiveEmployee();
+
+      if (emp) {
+        const displayEmpName = emp.nama && emp.nama.trim() ? emp.nama.trim() : '(Belum diisi)';
+
+        // 1. Update Right Panel Tab 1 (Bulanan)
+        const mRes = computeEmployeeMonthly(emp);
+        document.getElementById('m_res_pph').textContent = formatRupiah(mRes.pph);
+        document.getElementById('m_res_rate_label').textContent = `Tarif TER: ${(mRes.rate * 100).toFixed(2)}%`;
+        document.getElementById('m_res_thp').textContent = formatRupiah(mRes.thp);
+        document.getElementById('m_res_emp_subtitle').textContent = `Karyawan: ${displayEmpName}${emp.npwp ? ' (' + emp.npwp + ')' : ''}`;
+        document.getElementById('m_res_bruto').textContent = formatRupiah(mRes.bruto);
+        document.getElementById('m_res_cat_badge').textContent = `Kategori ${mRes.category} (PTKP ${emp.ptkp})`;
+        document.getElementById('m_res_rate').textContent = `${(mRes.rate * 100).toFixed(2)}%`;
+        document.getElementById('m_res_pph_bottom').textContent = formatRupiah(mRes.pph);
+
+        // 2. Update Right Panel Tab 2 (Tahunan)
+        const aRes = computeEmployeeAnnual(emp);
+        document.getElementById('a_res_desember').textContent = formatRupiah(aRes.pphDesember);
+        document.getElementById('a_res_setahun').textContent = formatRupiah(aRes.pphSetahun);
+        document.getElementById('a_res_emp_subtitle').textContent = `Karyawan: ${displayEmpName}${emp.npwp ? ' (' + emp.npwp + ')' : ''}`;
+        document.getElementById('a_res_bruto_teratur').textContent = formatRupiah(aRes.brutoTeratur);
+        document.getElementById('a_res_thr').textContent = formatRupiah(aRes.thr);
+        document.getElementById('a_res_bruto_total').textContent = formatRupiah(aRes.brutoTotal);
+        document.getElementById('a_res_biaya_jabatan').textContent = `- ${formatRupiah(aRes.biayaJabatan)}`;
+        document.getElementById('a_res_neto').textContent = formatRupiah(aRes.neto);
+        document.getElementById('a_res_ptkp_label').textContent = `PTKP Setahun (${emp.ptkp})`;
+        document.getElementById('a_res_ptkp').textContent = `- ${formatRupiah(aRes.ptkpAmount)}`;
+        document.getElementById('a_res_pkp').textContent = formatRupiah(aRes.pkpRounded);
+        document.getElementById('a_res_pph17').textContent = formatRupiah(aRes.pphSetahun);
+        document.getElementById('a_res_pph_jannov').textContent = formatRupiah(aRes.pphJanNov);
+        document.getElementById('a_res_pph_des_bottom').textContent = formatRupiah(aRes.pphDesember);
+      }
+
+      // 3. Update Right Panel Tab 3 (Badan 31E)
+      const bRes = computeCorporate(proj.corporate);
+      document.getElementById('b_res_pph29').textContent = formatRupiah(bRes.pph29);
+      document.getElementById('b_res_total').textContent = formatRupiah(bRes.totalPph);
+      document.getElementById('b_res_omzet').textContent = formatRupiah(bRes.totalOmzet);
+      document.getElementById('b_res_laba').textContent = formatRupiah(bRes.laba);
+      document.getElementById('b_res_pkp_fas').textContent = formatRupiah(bRes.pkpFasilitas);
+      document.getElementById('b_res_pajak_fas').textContent = formatRupiah(bRes.pajakFasilitas);
+      document.getElementById('b_res_pkp_non').textContent = formatRupiah(bRes.pkpNonFasilitas);
+      document.getElementById('b_res_pajak_non').textContent = formatRupiah(bRes.pajakNonFasilitas);
+      document.getElementById('b_res_total_bottom').textContent = formatRupiah(bRes.totalPph);
+      document.getElementById('b_res_kredit_val').textContent = `- ${formatRupiah(bRes.kredit25)}`;
+      document.getElementById('b_sig_company').textContent = getDisplayCompanyName(proj);
+
+      // 4. Render Employee Tables
+      renderEmployeeTables();
+
+      if (showNotif) {
+        showToast('Perhitungan pajak berhasil diperbarui!');
+      }
+    }
+
+    function renderEmployeeTables() {
+      const proj = getActiveProject();
+      const monthlyBody = document.getElementById('monthlyTableBody');
+      const monthlyFoot = document.getElementById('monthlyTableFoot');
+      const annualBody = document.getElementById('annualTableBody');
+      const annualFoot = document.getElementById('annualTableFoot');
+
+      let mSumGaji = 0, mSumTunj = 0, mSumThr = 0, mSumBruto = 0, mSumPph = 0, mSumThp = 0;
+      let aSumThr = 0, aSumBruto = 0, aSumPkp = 0, aSumSetahun = 0, aSumJanNov = 0, aSumDes = 0;
+
+      const allSelected = proj.employees.length > 0 && proj.employees.every(e => e.selected);
+      document.getElementById('checkAllMonthly').checked = allSelected;
+      document.getElementById('checkAllAnnual').checked = allSelected;
+
+      const ptkpOptionsList = ['TK/0', 'TK/1', 'K/0', 'TK/2', 'TK/3', 'K/1', 'K/2', 'K/3', 'K/I/0', 'K/I/1', 'K/I/2', 'K/I/3'];
+
+      monthlyBody.innerHTML = proj.employees.map((emp, idx) => {
+        const m = computeEmployeeMonthly(emp);
+        mSumGaji += emp.gajiBulanan;
+        mSumTunj += emp.tunjanganBulanan;
+        mSumThr += emp.thrBulanan;
+        mSumBruto += m.bruto;
+        mSumPph += m.pph;
+        mSumThp += m.thp;
+
+        const isActive = emp.id === state.activeEmpId;
+        const ptkpSelectHtml = ptkpOptionsList.map(code =>
+          `<option value="${code}" ${emp.ptkp === code ? 'selected' : ''}>${code}</option>`
+        ).join('');
+
+        return `
+          <tr onclick="selectEmployee('${emp.id}')" class="cursor-pointer transition ${isActive ? 'bg-amber-50/70' : 'hover:bg-slate-50'}">
+            <td class="py-2.5 px-2.5 text-center" onclick="event.stopPropagation()">
+              <input type="checkbox" ${emp.selected ? 'checked' : ''} onchange="toggleEmployeePrintSelect('${emp.id}', this.checked)" class="w-4 h-4 rounded accent-slate-900 cursor-pointer" />
+            </td>
+            <td class="py-2 px-2" onclick="event.stopPropagation()">
+              <input type="text" value="${escapeHtml(emp.nama)}" placeholder="Nama Karyawan #${idx + 1}..."
+                oninput="inlineEditEmpText('${emp.id}', 'nama', this.value)"
+                class="tax-input-sm w-44 font-semibold" />
+            </td>
+            <td class="py-2 px-2" onclick="event.stopPropagation()">
+              <input type="text" value="${escapeHtml(emp.npwp)}" placeholder="NPWP / NIK..."
+                oninput="inlineEditEmpText('${emp.id}', 'npwp', this.value)"
+                class="tax-input-sm w-32" />
+            </td>
+            <td class="py-2 px-2 text-center" onclick="event.stopPropagation()">
+              <select onchange="inlineEditEmpText('${emp.id}', 'ptkp', this.value)" class="tax-input-sm font-semibold">
+                ${ptkpSelectHtml}
+              </select>
+            </td>
+            <td class="py-2 px-2 text-center">
+              <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-xs">${m.category}</span>
+            </td>
+            <td class="py-2 px-2 text-right" onclick="event.stopPropagation()">
+              <input type="text" inputmode="numeric" value="${formatNumberDots(emp.gajiBulanan)}"
+                oninput="inlineEditEmpNum(this, '${emp.id}', 'gajiBulanan')"
+                class="tax-input-sm w-28 text-right font-semibold" />
+            </td>
+            <td class="py-2 px-2 text-right" onclick="event.stopPropagation()">
+              <input type="text" inputmode="numeric" value="${formatNumberDots(emp.tunjanganBulanan)}"
+                oninput="inlineEditEmpNum(this, '${emp.id}', 'tunjanganBulanan')"
+                class="tax-input-sm w-28 text-right" />
+            </td>
+            <td class="py-2 px-2 text-right" onclick="event.stopPropagation()">
+              <input type="text" inputmode="numeric" value="${formatNumberDots(emp.thrBulanan)}"
+                oninput="inlineEditEmpNum(this, '${emp.id}', 'thrBulanan')"
+                class="tax-input-sm w-28 text-right" />
+            </td>
+            <td class="py-2 px-2.5 text-right font-semibold text-slate-900">${formatRupiah(m.bruto)}</td>
+            <td class="py-2 px-2 text-center font-semibold text-amber-700">${(m.rate * 100).toFixed(2)}%</td>
+            <td class="py-2 px-2.5 text-right font-bold text-slate-900">${formatRupiah(m.pph)}</td>
+            <td class="py-2 px-2.5 text-right font-semibold text-emerald-700">${formatRupiah(m.thp)}</td>
+            <td class="py-2 px-2.5 text-center" onclick="event.stopPropagation()">
+              <div class="inline-flex items-center gap-1">
+                <button onclick="openMonthlyBreakdownModal('${emp.id}')" class="px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold" title="Lihat Rincian Per Bulan">📅 Bln</button>
+                <button onclick="deleteEmployeeById('${emp.id}')" class="px-2 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-semibold" title="Hapus Karyawan">✕</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      monthlyFoot.innerHTML = `
+        <tr>
+          <td colspan="5" class="py-3 px-3 text-right">TOTAL (${proj.employees.length} Karyawan):</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(mSumGaji)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(mSumTunj)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(mSumThr)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(mSumBruto)}</td>
+          <td class="py-3 px-2 text-center">-</td>
+          <td class="py-3 px-2.5 text-right text-blue-700">${formatRupiah(mSumPph)}</td>
+          <td class="py-3 px-2.5 text-right text-emerald-700">${formatRupiah(mSumThp)}</td>
+          <td></td>
+        </tr>
+      `;
+
+      annualBody.innerHTML = proj.employees.map((emp, idx) => {
+        const a = computeEmployeeAnnual(emp);
+        aSumThr += a.thr;
+        aSumBruto += a.brutoTotal;
+        aSumPkp += a.pkpRounded;
+        aSumSetahun += a.pphSetahun;
+        aSumJanNov += a.pphJanNov;
+        aSumDes += a.pphDesember;
+
+        const isActive = emp.id === state.activeEmpId;
+        const empDisplay = emp.nama && emp.nama.trim() ? emp.nama.trim() : `Karyawan #${idx + 1} (Belum diisi)`;
+
+        return `
+          <tr onclick="selectEmployee('${emp.id}')" class="cursor-pointer transition ${isActive ? 'bg-amber-50/70' : 'hover:bg-slate-50'}">
+            <td class="py-2.5 px-2.5 text-center" onclick="event.stopPropagation()">
+              <input type="checkbox" ${emp.selected ? 'checked' : ''} onchange="toggleEmployeePrintSelect('${emp.id}', this.checked)" class="w-4 h-4 rounded accent-slate-900 cursor-pointer" />
+            </td>
+            <td class="py-2.5 px-2.5">
+              <div class="font-bold text-slate-900">${escapeHtml(empDisplay)}</div>
+              <div class="text-[11px] text-slate-400">${escapeHtml(emp.npwp || '-')}</div>
+            </td>
+            <td class="py-2.5 px-2 text-center">
+              <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold text-xs">${emp.ptkp}</span>
+            </td>
+            <td class="py-2.5 px-2.5 text-right" onclick="event.stopPropagation()">
+              <input type="text" inputmode="numeric" value="${formatNumberDots(emp.thrSetahun)}"
+                oninput="inlineEditEmpNum(this, '${emp.id}', 'thrSetahun')"
+                class="tax-input-sm w-32 text-right" />
+            </td>
+            <td class="py-2.5 px-2.5 text-right font-medium text-slate-700">${formatRupiah(a.brutoTotal)}</td>
+            <td class="py-2.5 px-2.5 text-right font-medium text-slate-700">${formatRupiah(a.pkpRounded)}</td>
+            <td class="py-2.5 px-2.5 text-right font-semibold text-slate-900">${formatRupiah(a.pphSetahun)}</td>
+            <td class="py-2.5 px-2.5 text-right text-slate-600">${formatRupiah(a.pphJanNov)}</td>
+            <td class="py-2.5 px-2.5 text-right font-bold text-blue-700">${formatRupiah(a.pphDesember)}</td>
+            <td class="py-2.5 px-2.5 text-center" onclick="event.stopPropagation()">
+              <div class="inline-flex items-center gap-1">
+                <button onclick="openMonthlyBreakdownModal('${emp.id}')" class="px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold">📅 Bln</button>
+                <button onclick="deleteEmployeeById('${emp.id}')" class="px-2 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-semibold">✕</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      annualFoot.innerHTML = `
+        <tr>
+          <td colspan="3" class="py-3 px-3 text-right">TOTAL (${proj.employees.length} Karyawan):</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(aSumThr)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(aSumBruto)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(aSumPkp)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(aSumSetahun)}</td>
+          <td class="py-3 px-2.5 text-right">${formatRupiah(aSumJanNov)}</td>
+          <td class="py-3 px-2.5 text-right text-blue-700">${formatRupiah(aSumDes)}</td>
+          <td></td>
+        </tr>
+      `;
+    }
+
+    // =========================================================================
+    // G. AKSI KARYAWAN & PERUSAHAAN
+    // =========================================================================
+    function updateActiveCompanyName(newName) {
+      const proj = getActiveProject();
+      proj.name = newName;
+      saveAppData();
+      document.getElementById('headerCompanyInput').value = newName;
+      const setCompInput = document.getElementById('set_activeCompanyName');
+      if (setCompInput && document.activeElement !== setCompInput) {
+        setCompInput.value = newName;
+      }
+      // Update option label in header select
+      const headerSel = document.getElementById('headerProjectSelect');
+      const idx = appData.projects.findIndex(p => p.id === proj.id);
+      if (headerSel && headerSel.options[idx]) {
+        headerSel.options[idx].text = newName.trim() ? newName.trim() : `Project #${idx + 1} (Belum dinamai)`;
+      }
+      document.getElementById('b_sig_company').textContent = getDisplayCompanyName(proj);
+    }
+
+    function updateActiveProjectMeta(field, val) {
+      const proj = getActiveProject();
+      proj[field] = val;
+      saveAppData();
+    }
+
+    function selectEmployee(empId) {
+      state.activeEmpId = empId;
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+    }
+
+    function syncEmployeeTextField(field, value) {
+      const emp = getActiveEmployee();
+      if (!emp) return;
+      emp[field] = value;
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+    }
+
+    function inlineEditEmpText(empId, field, value) {
+      const proj = getActiveProject();
+      const emp = proj.employees.find(e => e.id === empId);
+      if (!emp) return;
+      emp[field] = value;
+      saveAppData();
+      if (emp.id === state.activeEmpId) {
+        populateFormsFromActiveState();
+      }
+      recalculateAll(false);
+    }
+
+    function inlineEditEmpNum(el, empId, field) {
+      const numVal = formatInputElement(el);
+      const proj = getActiveProject();
+      const emp = proj.employees.find(e => e.id === empId);
+      if (!emp) return;
+      emp[field] = numVal;
+      if (field === 'gajiBulanan') {
+        emp.gajiDes = numVal;
+        emp.gajiJanNov = numVal * 11;
+      } else if (field === 'tunjanganBulanan') {
+        emp.tunjDes = numVal;
+        emp.tunjJanNov = numVal * 11;
+      } else if (field === 'thrBulanan') {
+        emp.thrSetahun = numVal;
+      }
+      saveAppData();
+      if (emp.id === state.activeEmpId) {
+        populateFormsFromActiveState();
+      }
+      recalculateAll(false);
+    }
+
+    function addNewEmployee() {
+      const proj = getActiveProject();
+      const newEmp = createEmptyEmployeeTemplate(Date.now());
+      proj.employees.push(newEmp);
+      state.activeEmpId = newEmp.id;
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+      showToast(`Baris karyawan baru (#${proj.employees.length}) siap diisi.`);
+    }
+
+    function deleteActiveEmployee() {
+      deleteEmployeeById(state.activeEmpId);
+    }
+
+    function deleteEmployeeById(empId) {
+      const proj = getActiveProject();
+      if (proj.employees.length <= 1) {
+        showToast('Minimal harus ada 1 baris data karyawan.');
+        return;
+      }
+      const idx = proj.employees.findIndex(e => e.id === empId);
+      if (idx === -1) return;
+      proj.employees.splice(idx, 1);
+      if (state.activeEmpId === empId) {
+        state.activeEmpId = proj.employees[0].id;
+      }
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+      showToast('Data karyawan dihapus.');
+    }
+
+    function toggleEmployeePrintSelect(empId, checked) {
+      const proj = getActiveProject();
+      const emp = proj.employees.find(e => e.id === empId);
+      if (emp) {
+        emp.selected = checked;
+        saveAppData();
+        renderEmployeeTables();
+      }
+    }
+
+    function toggleSelectAllEmployees(checked) {
+      const proj = getActiveProject();
+      proj.employees.forEach(e => e.selected = checked);
+      saveAppData();
+      renderEmployeeTables();
+    }
+
+    function autoFillJanNovTer() {
+      const emp = getActiveEmployee();
+      if (!emp) return;
+      const monthlyGaji = Math.round((emp.gajiJanNov || 0) / 11);
+      const monthlyTunj = Math.round((emp.tunjJanNov || 0) / 11);
+      const monthlyBpjs = Math.round((emp.bpjsJanNov || 0) / 11);
+      const brutoBln = monthlyGaji + monthlyTunj + monthlyBpjs;
+      const { rate } = getTerRate(emp.ptkp, brutoBln);
+      emp.pphJanNov = Math.round(brutoBln * rate) * 11;
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(true);
+    }
+
+    function resetActiveMonthlyEmployee() {
+      const emp = getActiveEmployee();
+      if (!emp) return;
+      emp.gajiBulanan = 0;
+      emp.tunjanganBulanan = 0;
+      emp.thrBulanan = 0;
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(true);
+    }
+
+    function resetActiveAnnualEmployee() {
+      const emp = getActiveEmployee();
+      if (!emp) return;
+      emp.gajiDes = 0;
+      emp.gajiJanNov = 0;
+      emp.tunjDes = 0;
+      emp.bpjsDes = 0;
+      emp.tunjJanNov = 0;
+      emp.bpjsJanNov = 0;
+      emp.thrSetahun = 0;
+      emp.pphJanNov = 0;
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(true);
+    }
+
+    function resetCorporateData() {
+      const proj = getActiveProject();
+      proj.corporate = { omzet: 0, omzetLain: 0, laba: 0, kredit25: 0 };
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(true);
+    }
+
+    // =========================================================================
+    // H. MODAL RINCIAN HITUNGAN PAJAK PER BULAN (JANUARI – DESEMBER)
+    // =========================================================================
+    function openMonthlyBreakdownModal(empId) {
+      const proj = getActiveProject();
+      const emp = proj.employees.find(e => e.id === empId) || getActiveEmployee();
+      if (!emp) return;
+
+      state.modalEmpId = emp.id;
+      if (!Array.isArray(emp.monthlyThrOverrides) || emp.monthlyThrOverrides.length !== 12) {
+        emp.monthlyThrOverrides = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      }
+
+      const displayEmpName = emp.nama && emp.nama.trim() ? emp.nama.trim() : '(Karyawan Belum Dinamai)';
+      document.getElementById('modalMonthEmpInfo').textContent =
+        `Karyawan: ${displayEmpName} • NIK/NPWP: ${emp.npwp || '-'} • Status PTKP: ${emp.ptkp}`;
+
+      renderMonthlyBreakdownRows(emp);
+      document.getElementById('monthlyModal').classList.remove('hidden');
+    }
+
+    function updateMonthlyThrOverride(monthIndex, el) {
+      const val = formatInputElement(el);
+      const proj = getActiveProject();
+      const emp = proj.employees.find(e => e.id === state.modalEmpId);
+      if (!emp) return;
+      emp.monthlyThrOverrides[monthIndex] = val;
+      // Sinkronkan total THR setahun dari penjumlahan 12 bulan
+      const sumThr = emp.monthlyThrOverrides.reduce((acc, v) => acc + (v || 0), 0);
+      emp.thrSetahun = sumThr;
+      saveAppData();
+      renderMonthlyBreakdownRows(emp);
+      if (emp.id === state.activeEmpId) {
+        populateFormsFromActiveState();
+      }
+      recalculateAll(false);
+    }
+
+    function renderMonthlyBreakdownRows(emp) {
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+
+      const avgGajiJanNov = emp.gajiJanNov > 0 ? Math.round(emp.gajiJanNov / 11) : (emp.gajiBulanan || 0);
+      const avgTunjJanNov = emp.tunjJanNov > 0 ? Math.round(emp.tunjJanNov / 11) : (emp.tunjanganBulanan || 0);
+      const avgBpjsJanNov = emp.bpjsJanNov > 0 ? Math.round(emp.bpjsJanNov / 11) : 0;
+
+      let totalBruto12 = 0;
+      let totalPphJanNov = 0;
+      const rowsData = [];
+
+      for (let idx = 0; idx < 12; idx++) {
+        const isDec = idx === 11;
+        const gajiTunjBpjs = isDec
+          ? ((emp.gajiDes || emp.gajiBulanan || 0) + (emp.tunjDes || emp.tunjanganBulanan || 0) + (emp.bpjsDes || 0))
+          : (avgGajiJanNov + avgTunjJanNov + avgBpjsJanNov);
+
+        const thrMonth = emp.monthlyThrOverrides[idx] || 0;
+        const brutoMonth = gajiTunjBpjs + thrMonth;
+        totalBruto12 += brutoMonth;
+
+        if (!isDec) {
+          const { rate, category } = getTerRate(emp.ptkp, brutoMonth);
+          const pphMonth = Math.round(brutoMonth * rate);
+          totalPphJanNov += pphMonth;
+          rowsData.push({
+            idx,
+            name: months[idx],
+            isDec: false,
+            gajiTunjBpjs,
+            thrMonth,
+            brutoMonth,
+            methodLabel: `TER ${category} (${(rate * 100).toFixed(2)}%)`,
+            pphMonth
+          });
+        } else {
+          // Hitung PPh Setahun Pasal 17 dari totalBruto12
+          const biayaJabatan = Math.min(Math.round(totalBruto12 * 0.05), 6000000);
+          const neto = Math.max(0, totalBruto12 - biayaJabatan);
+          const ptkpAmount = (PTKP_MAP[emp.ptkp] || PTKP_MAP['TK/0']).amount;
+          const pkpRounded = Math.floor(Math.max(0, neto - ptkpAmount) / 1000) * 1000;
+          const pphSetahun = calcPasal17(pkpRounded);
+          const pphDec = pphSetahun - totalPphJanNov;
+
+          rowsData.push({
+            idx,
+            name: months[idx],
+            isDec: true,
+            gajiTunjBpjs,
+            thrMonth,
+            brutoMonth,
+            methodLabel: `Pasal 17 Setahun – Jan–Nov`,
+            pphMonth: pphDec,
+            pphSetahun
+          });
+        }
+      }
+
+      document.getElementById('monthlyBreakdownBody').innerHTML = rowsData.map(r => `
+        <tr class="${r.isDec ? 'bg-amber-50/70 font-semibold' : 'hover:bg-slate-50'}">
+          <td class="py-2 px-3 font-medium text-slate-900">${r.name}</td>
+          <td class="py-2 px-3 text-right">${formatRupiah(r.gajiTunjBpjs)}</td>
+          <td class="py-2 px-3 text-right">
+            <input type="text" inputmode="numeric" value="${formatNumberDots(r.thrMonth)}"
+              oninput="updateMonthlyThrOverride(${r.idx}, this)"
+              class="tax-input-sm w-28 text-right" />
+          </td>
+          <td class="py-2 px-3 text-right font-semibold">${formatRupiah(r.brutoMonth)}</td>
+          <td class="py-2 px-3 text-center text-xs">${r.methodLabel}</td>
+          <td class="py-2 px-3 text-right font-bold ${r.isDec ? 'text-blue-700' : 'text-slate-900'}">${formatRupiah(r.pphMonth)}</td>
+        </tr>
+      `).join('');
+
+      const decRow = rowsData[11];
+      document.getElementById('monthlyBreakdownFoot').innerHTML = `
+        <tr>
+          <td colspan="3" class="py-2.5 px-3 text-right">TOTAL SETAHUN (12 BULAN):</td>
+          <td class="py-2.5 px-3 text-right">${formatRupiah(totalBruto12)}</td>
+          <td class="py-2.5 px-3 text-center">Tarif Progresif Ps. 17</td>
+          <td class="py-2.5 px-3 text-right text-blue-700">${formatRupiah(decRow.pphSetahun)}</td>
+        </tr>
+      `;
+    }
+
+    // =========================================================================
+    // I. SETELAN: MULTI-PROJECT KLIEN, BAHASA & CUSTOM WARNA
+    // =========================================================================
+    function openSettingsModal() {
+      const proj = getActiveProject();
+      document.getElementById('set_activeCompanyName').value = proj.name || '';
+      document.getElementById('set_activeCompanyNpwp').value = proj.npwp || '';
+      document.getElementById('set_activeTaxYear').value = proj.taxYear || '2025';
+      document.getElementById('set_activeTaxPeriod').value = proj.taxPeriod || 'Jan–Des';
+
+      renderProjectListInModal();
+      updateLangButtonsUI();
+      document.getElementById('customPrimaryPicker').value = appData.theme.primary;
+      document.getElementById('customAccentPicker').value = appData.theme.accent;
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function renderProjectListInModal() {
+      const container = document.getElementById('projectListContainer');
+      container.innerHTML = appData.projects.map((p, idx) => {
+        const isCurrent = p.id === appData.activeProjectId;
+        const projDisplayName = p.name && p.name.trim() ? p.name.trim() : `Project #${idx + 1} (Nama perusahaan belum diisi)`;
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl border ${isCurrent ? 'border-slate-900 bg-slate-50' : 'border-slate-200 bg-white'}">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs sm:text-sm font-bold text-slate-900">${escapeHtml(projDisplayName)}</span>
+                ${isCurrent ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Aktif</span>' : ''}
+              </div>
+              <div class="text-[11px] text-slate-500">NPWP: ${escapeHtml(p.npwp || '-')} • Tahun ${escapeHtml(p.taxYear || '2025')} • ${p.employees.length} Karyawan</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${!isCurrent ? `<button onclick="switchProject('${p.id}'); openSettingsModal();" class="px-2.5 py-1 rounded-lg bg-theme-primary text-white text-xs font-semibold">Buka</button>` : ''}
+              ${appData.projects.length > 1 ? `<button onclick="deleteProject('${p.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold">Hapus</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function createNewProject() {
+      const nameInput = document.getElementById('newProjectName');
+      const npwpInput = document.getElementById('newProjectNpwp');
+      const name = nameInput.value.trim();
+
+      const newProj = createEmptyProjectTemplate(Date.now());
+      newProj.name = name;
+      newProj.npwp = npwpInput.value.trim();
+
+      appData.projects.push(newProj);
+      appData.activeProjectId = newProj.id;
+      state.activeEmpId = newProj.activeEmpId;
+
+      nameInput.value = '';
+      npwpInput.value = '';
+
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+      openSettingsModal();
+      showToast(`Project baru${name ? ' "' + name + '"' : ''} berhasil ditambahkan & tersimpan!`);
+    }
+
+    function switchProject(projectId) {
+      const proj = appData.projects.find(p => p.id === projectId);
+      if (!proj) return;
+      appData.activeProjectId = proj.id;
+      state.activeEmpId = proj.activeEmpId || (proj.employees[0] ? proj.employees[0].id : '');
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+      showToast(`Beralih ke: ${getDisplayCompanyName(proj)}`);
+    }
+
+    function deleteProject(projectId) {
+      if (appData.projects.length <= 1) return;
+      const idx = appData.projects.findIndex(p => p.id === projectId);
+      if (idx === -1) return;
+      appData.projects.splice(idx, 1);
+      if (appData.activeProjectId === projectId) {
+        appData.activeProjectId = appData.projects[0].id;
+        state.activeEmpId = appData.projects[0].employees[0]?.id || '';
+      }
+      saveAppData();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+      openSettingsModal();
+      showToast('Project berhasil dihapus.');
+    }
+
+    function applyThemePreset(primary, primaryHover, accent, accentDark, soft) {
+      appData.theme = { primary, primaryHover, accent, accentDark, soft };
+      applyThemeToDOM();
+      saveAppData();
+      document.getElementById('customPrimaryPicker').value = primary;
+      document.getElementById('customAccentPicker').value = accent;
+    }
+
+    function updateCustomColor() {
+      const p = document.getElementById('customPrimaryPicker').value;
+      const a = document.getElementById('customAccentPicker').value;
+      appData.theme = {
+        primary: p,
+        primaryHover: p,
+        accent: a,
+        accentDark: a,
+        soft: '#f8fafc'
+      };
+      applyThemeToDOM();
+      saveAppData();
+    }
+
+    function applyThemeToDOM() {
+      const root = document.documentElement;
+      root.style.setProperty('--theme-primary', appData.theme.primary);
+      root.style.setProperty('--theme-primary-hover', appData.theme.primaryHover || appData.theme.primary);
+      root.style.setProperty('--theme-accent', appData.theme.accent);
+      root.style.setProperty('--theme-accent-dark', appData.theme.accentDark || appData.theme.accent);
+      root.style.setProperty('--theme-soft', appData.theme.soft || '#fefce8');
+    }
+
+    // Bilingual Support (ID / EN)
+    const I18N = {
+      id: {
+        appTitle: 'Aplikasi Perpajakan Terpadu',
+        btnPrintPdf: 'Cetak PDF (A4)',
+        btnSettings: 'Setelan',
+        tabMonthly: 'PPh 21 Bulanan (TER)',
+        tabAnnual: 'PPh 21 Tahunan (1721-A1)',
+        tabCorporate: 'PPh Badan (Pasal 31E)',
+        tabReference: 'Referensi Tarif & PTKP',
+        monthlySimTitle: 'Simulasi Pemotongan Bulanan',
+        btnReset: 'Reset',
+        selectEmployeeLabel: 'Karyawan yang Sedang Diedit',
+        btnAddEmp: 'Tambah Karyawan',
+        btnDelEmp: 'Hapus',
+        empNameLabel: 'Nama Karyawan',
+        selectPtkpTerLabel: 'Pilih Status PTKP (Menentukan Kategori TER)',
+        baseSalaryMonthLabel: 'Gaji Pokok Sebulan',
+        allowanceMonthLabel: 'Tunjangan PPh 21 / Tunjangan Lain',
+        thrMonthLabel: 'THR / Bonus Bulan Ini (Opsional)',
+        btnCalcMonthly: 'Hitung PPh 21 TER',
+        btnSaveToList: 'Simpan / Tambah Baru',
+        monthlyTaxDueTitle: 'PPh 21 Terutang Sebulan',
+        netTakeHomeTitle: 'Gaji Bersih Diterima (Take Home Pay)',
+        netTakeHomeSub: 'Bruto – Potongan PPh 21',
+        terFormulaHeader: 'RINCIAN RUMUS TER PP 58/2023',
+        btnViewPerMonth: 'Lihat Per Bulan (Jan–Des)',
+        grossThisMonth: 'Penghasilan Bruto Bulan Ini:',
+        terCategoryLabel: 'Kategori TER:',
+        terRateApplied: 'Tarif Efektif Sesuai Lapisan Bruto:',
+        monthlyDeductionFinal: 'Potongan PPh 21 Bulan Ini:',
+        monthlyListTitle: 'Daftar Karyawan Perusahaan (PPh 21 Bulanan)',
+        monthlyListSub: 'Isi atau edit langsung Nama, NPWP/NIK, Gaji, Tunjangan, & THR/Bonus tiap karyawan. Centang kotak kiri untuk memilih karyawan saat cetak PDF.',
+        btnSelectAll: 'Pilih Semua',
+        btnUnselectAll: 'Batal Pilih',
+        annualParamTitle: 'Parameter Input Karyawan',
+        ptkpStatusLabel: 'Status PTKP',
+        baseSalaryCompHeader: 'KOMPONEN GAJI POKOK',
+        decSalaryLabel: 'Gaji Desember',
+        janNovSalaryLabel: 'Gaji Jan–Nov (11 bln)',
+        decUnderpaymentTitle: 'PPh 21 Masa Desember (Kurang/Lebih Bayar)',
+        annualTotalTaxTitle: 'Total PPh 21 Setahun (Ps. 17)',
+        form1721Header: 'RINCIAN PERHITUNGAN FORMULIR 1721-A1',
+        annualListTitle: 'Rekapitulasi PPh 21 Tahunan Karyawan (SPT 1721-A1)',
+        annualListSub: 'Daftar tersinkronisasi otomatis dengan tab PPh 21 Bulanan. Anda dapat menambah/menghapus karyawan dan memilih baris untuk cetak PDF.',
+        corpInputTitle: 'Data Keuangan Badan Usaha',
+        grossTurnoverLabel: 'Peredaran Bruto Usaha (Omzet)',
+        grossTurnoverHint: 'Maksimal Rp 50 Miliar untuk fasilitas Pasal 31E',
+        otherGrossLabel: 'Peredaran Bruto Lainnya',
+        fiscalNetProfitLabel: 'Penghasilan Neto Fiskal / Laba Bersih (Before Tax)',
+        taxCredit25Label: 'Kredit Pajak (PPh Pasal 25 yang Sudah Dibayar)',
+        btnCalcCorp: 'Hitung PPh Badan (Pasal 31E)',
+        pph29Title: 'PPh Pasal 29 (Kurang Bayar)',
+        pph29Sub: 'Harus disetor ke kas negara',
+        totalCorpTaxTitle: 'Total PPh Terutang',
+        corpDetailHeader: 'RINCIAN PERHITUNGAN FASILITAS PASAL 31E',
+        settingsTitle: 'Setelan Aplikasi & Manajemen Project Klien',
+        settingsSub: 'Kelola banyak perusahaan klien, tahun/masa pajak, bahasa tampilan, dan tema warna kalkulator.',
+        projectMgmtHeader: '1. Identitas & Manajemen Project Perusahaan Klien',
+        langSettingHeader: '2. Bahasa Antarmuka (Language)',
+        colorSettingHeader: '3. Custom Warna Kalkulator'
+      },
+      en: {
+        appTitle: 'Integrated Tax Calculator Suite',
+        btnPrintPdf: 'Print PDF (A4)',
+        btnSettings: 'Settings',
+        tabMonthly: 'Monthly PPh 21 (TER)',
+        tabAnnual: 'Annual PPh 21 (1721-A1)',
+        tabCorporate: 'Corporate Tax (Art. 31E)',
+        tabReference: 'TER & PTKP Reference',
+        monthlySimTitle: 'Monthly Withholding Simulation',
+        btnReset: 'Reset',
+        selectEmployeeLabel: 'Currently Selected Employee',
+        btnAddEmp: 'Add Employee',
+        btnDelEmp: 'Delete',
+        empNameLabel: 'Employee Name',
+        selectPtkpTerLabel: 'Select PTKP Status (Determines TER Category)',
+        baseSalaryMonthLabel: 'Monthly Base Salary',
+        allowanceMonthLabel: 'PPh 21 Allowance / Other Allowance',
+        thrMonthLabel: 'Monthly Bonus / THR (Optional)',
+        btnCalcMonthly: 'Calculate Monthly TER',
+        btnSaveToList: 'Save / Add New',
+        monthlyTaxDueTitle: 'Monthly PPh 21 Payable',
+        netTakeHomeTitle: 'Net Take Home Pay',
+        netTakeHomeSub: 'Gross – PPh 21 Deduction',
+        terFormulaHeader: 'TER PP 58/2023 FORMULA BREAKDOWN',
+        btnViewPerMonth: 'View Per Month (Jan–Dec)',
+        grossThisMonth: 'Gross Income This Month:',
+        terCategoryLabel: 'TER Category:',
+        terRateApplied: 'Effective Rate by Gross Bracket:',
+        monthlyDeductionFinal: 'PPh 21 Deduction This Month:',
+        monthlyListTitle: 'Company Employee List (Monthly PPh 21)',
+        monthlyListSub: 'Edit Name, NPWP/NIK, Salary, Allowance, & Bonus directly in table. Check left boxes to choose employees for PDF print.',
+        btnSelectAll: 'Select All',
+        btnUnselectAll: 'Unselect All',
+        annualParamTitle: 'Employee Input Parameters',
+        ptkpStatusLabel: 'PTKP Status',
+        baseSalaryCompHeader: 'BASE SALARY COMPONENTS',
+        decSalaryLabel: 'December Salary',
+        janNovSalaryLabel: 'Jan–Nov Salary (11 mos)',
+        decUnderpaymentTitle: 'December PPh 21 (Under/Overpayment)',
+        annualTotalTaxTitle: 'Total Annual PPh 21 (Art. 17)',
+        form1721Header: 'FORM 1721-A1 CALCULATION DETAILS',
+        annualListTitle: 'Annual PPh 21 Employee Recapitulation (SPT 1721-A1)',
+        annualListSub: 'Automatically synced with Monthly PPh 21 tab. Add/remove employees and select rows for A4 PDF export.',
+        corpInputTitle: 'Corporate Financial Data',
+        grossTurnoverLabel: 'Gross Business Turnover',
+        grossTurnoverHint: 'Max IDR 50 Billion for Article 31E facility',
+        otherGrossLabel: 'Other Gross Income',
+        fiscalNetProfitLabel: 'Fiscal Net Profit (Before Tax)',
+        taxCredit25Label: 'Tax Credit (Prepaid PPh Article 25)',
+        btnCalcCorp: 'Calculate Corporate Tax (Art. 31E)',
+        pph29Title: 'PPh Article 29 (Underpayment)',
+        pph29Sub: 'Payable to State Treasury',
+        totalCorpTaxTitle: 'Total Corporate Tax Payable',
+        corpDetailHeader: 'ARTICLE 31E FACILITY CALCULATION DETAILS',
+        settingsTitle: 'Application Settings & Multi-Client Projects',
+        settingsSub: 'Manage multiple client companies, tax year/period, interface language, and calculator theme colors.',
+        projectMgmtHeader: '1. Client Company Identity & Project Management',
+        langSettingHeader: '2. Interface Language',
+        colorSettingHeader: '3. Calculator Color Customization'
+      }
+    };
+
+    function setLanguage(lang) {
+      appData.lang = lang;
+      saveAppData();
+      applyLanguageToDOM();
+      updateLangButtonsUI();
+      recalculateAll(false);
+    }
+
+    function applyLanguageToDOM() {
+      const dict = I18N[appData.lang] || I18N.id;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+    }
+
+    function updateLangButtonsUI() {
+      const btnId = document.getElementById('langBtn-id');
+      const btnEn = document.getElementById('langBtn-en');
+      if (appData.lang === 'id') {
+        btnId.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-900 bg-slate-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+        btnEn.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+      } else {
+        btnEn.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-900 bg-slate-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+        btnId.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+      }
+    }
+
+    // =========================================================================
+    // J. CETAK PDF UKURAN A4 PRESISI (1 JENIS PPh = 1 HALAMAN PENUH TANPA TERPOTONG)
+    // =========================================================================
+    function openPrintModal() {
+      renderPrintEmployeeChecklist();
+      document.getElementById('printModal').classList.remove('hidden');
+    }
+
+    function renderPrintEmployeeChecklist() {
+      const proj = getActiveProject();
+      const selectedCount = proj.employees.filter(e => e.selected).length;
+      document.getElementById('printAllEmpCount').textContent = proj.employees.length;
+      document.getElementById('printSelectedEmpCount').textContent = selectedCount;
+
+      const box = document.getElementById('printEmpChecklistBox');
+      box.innerHTML = proj.employees.map((emp, idx) => {
+        const label = emp.nama && emp.nama.trim() ? emp.nama.trim() : `Karyawan #${idx + 1} (Belum diisi)`;
+        return `
+          <label class="flex items-center justify-between px-3 py-2 hover:bg-white cursor-pointer text-xs">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" ${emp.selected ? 'checked' : ''} onchange="toggleEmployeePrintSelect('${emp.id}', this.checked); renderPrintEmployeeChecklist();" class="w-4 h-4 rounded accent-slate-900" />
+              <span class="font-semibold text-slate-800">${idx + 1}. ${escapeHtml(label)}</span>
+            </div>
+            <span class="text-slate-500">${emp.ptkp}</span>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function executePrintA4() {
+      const scope = document.querySelector('input[name="printScope"]:checked')?.value || 'all';
+      const empMode = document.querySelector('input[name="printEmpMode"]:checked')?.value || 'all';
+      const proj = getActiveProject();
+      const companyDisplay = getDisplayCompanyName(proj);
+      const taxYear = proj.taxYear || '2025';
+      const taxPeriod = proj.taxPeriod || 'Jan–Des';
+
+      let targetEmployees = proj.employees;
+      if (empMode === 'selected') {
+        targetEmployees = proj.employees.filter(e => e.selected);
+        if (targetEmployees.length === 0) {
+          showToast('Tidak ada karyawan yang dicentang! Silakan centang minimal 1 karyawan.');
+          return;
+        }
+      }
+
+      const pages = [];
+      const todayStr = '20 November 2026';
+
+      // HALAMAN 1: PPh 21 BULANAN (TER PP 58/2023) - 1 Halaman A4 Penuh
+      if (scope === 'all' || scope === 'bulanan') {
+        let sumGaji = 0, sumTunj = 0, sumThr = 0, sumBruto = 0, sumPph = 0, sumThp = 0;
+        const rows = targetEmployees.map((emp, idx) => {
+          const m = computeEmployeeMonthly(emp);
+          const empName = emp.nama && emp.nama.trim() ? emp.nama.trim() : `Karyawan #${idx + 1}`;
+          sumGaji += emp.gajiBulanan;
+          sumTunj += emp.tunjanganBulanan;
+          sumThr += emp.thrBulanan;
+          sumBruto += m.bruto;
+          sumPph += m.pph;
+          sumThp += m.thp;
+          return `
+            <tr>
+              <td style="text-align:center;">${idx + 1}</td>
+              <td><strong>${escapeHtml(empName)}</strong><br/><span style="color:#64748b;">${escapeHtml(emp.npwp || '-')}</span></td>
+              <td style="text-align:center;">${emp.ptkp} (TER ${m.category})</td>
+              <td style="text-align:right;">${formatRupiah(emp.gajiBulanan)}</td>
+              <td style="text-align:right;">${formatRupiah(emp.tunjanganBulanan)}</td>
+              <td style="text-align:right;">${formatRupiah(emp.thrBulanan)}</td>
+              <td style="text-align:right;font-weight:700;">${formatRupiah(m.bruto)}</td>
+              <td style="text-align:center;">${(m.rate * 100).toFixed(2)}%</td>
+              <td style="text-align:right;font-weight:700;">${formatRupiah(m.pph)}</td>
+              <td style="text-align:right;">${formatRupiah(m.thp)}</td>
+            </tr>
+          `;
+        }).join('');
+
+        pages.push(`
+          <div class="print-page">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #071b34;padding-bottom:7px;margin-bottom:10px;">
+              <div>
+                <div style="font-size:12.5pt;font-weight:800;color:#071b34;">LAPORAN PEMOTONGAN PPh PASAL 21 BULANAN (TER PP 58/2023)</div>
+                <div style="font-size:9pt;color:#475569;margin-top:2px;">Perusahaan: <strong>${escapeHtml(companyDisplay)}</strong> • NPWP: ${escapeHtml(proj.npwp || '-')}</div>
+              </div>
+              <div style="text-align:right;font-size:8pt;color:#475569;">
+                <div>Tahun / Masa Pajak: <strong>${escapeHtml(taxYear)} (${escapeHtml(taxPeriod)})</strong></div>
+                <div>Jumlah Karyawan: <strong>${targetEmployees.length} Orang</strong></div>
+              </div>
+            </div>
+
+            <table class="print-table">
+              <thead>
+                <tr>
+                  <th style="width:4%;">No</th>
+                  <th style="width:19%;">Nama Karyawan &amp; NIK</th>
+                  <th style="width:10%;">PTKP / TER</th>
+                  <th style="width:11%;">Gaji Pokok</th>
+                  <th style="width:10%;">Tunj. PPh 21</th>
+                  <th style="width:10%;">THR / Bonus</th>
+                  <th style="width:11%;">Bruto Sebulan</th>
+                  <th style="width:6%;">Tarif</th>
+                  <th style="width:9%;">PPh 21 TER</th>
+                  <th style="width:10%;">Take Home Pay</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+              <tfoot>
+                <tr style="background:#f1f5f9;font-weight:800;">
+                  <td colspan="3" style="text-align:right;">TOTAL KESELURUHAN:</td>
+                  <td style="text-align:right;">${formatRupiah(sumGaji)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumTunj)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumThr)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumBruto)}</td>
+                  <td style="text-align:center;">-</td>
+                  <td style="text-align:right;">${formatRupiah(sumPph)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumThp)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:8pt;color:#475569;">
+              <div>
+                <strong>Dasar Regulasi:</strong><br/>
+                • PP No. 58 Tahun 2023 &amp; PMK No. 168 Tahun 2023 tentang Tarif Pemotongan PPh Pasal 21.<br/>
+                • PPh Pasal 21 masa Januari s.d. November dihitung menggunakan Tarif Efektif Bulanan (TER) × Penghasilan Bruto bulanan.
+              </div>
+              <div style="text-align:right;">
+                <div>${todayStr}</div>
+                <div style="margin-bottom:32px;">Bagian Keuangan &amp; Perpajakan</div>
+                <div>( ...................................... )</div>
+                <div style="font-weight:700;color:#0f172a;">${escapeHtml(companyDisplay)}</div>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      // HALAMAN 2: PPh 21 TAHUNAN (MASA DESEMBER / SPT 1721-A1) - 1 Halaman A4 Penuh
+      if (scope === 'all' || scope === 'tahunan') {
+        let sumBruto = 0, sumBj = 0, sumNeto = 0, sumPtkp = 0, sumPkp = 0, sumPph17 = 0, sumJanNov = 0, sumDes = 0;
+        const rows = targetEmployees.map((emp, idx) => {
+          const a = computeEmployeeAnnual(emp);
+          const empName = emp.nama && emp.nama.trim() ? emp.nama.trim() : `Karyawan #${idx + 1}`;
+          sumBruto += a.brutoTotal;
+          sumBj += a.biayaJabatan;
+          sumNeto += a.neto;
+          sumPtkp += a.ptkpAmount;
+          sumPkp += a.pkpRounded;
+          sumPph17 += a.pphSetahun;
+          sumJanNov += a.pphJanNov;
+          sumDes += a.pphDesember;
+
+          return `
+            <tr>
+              <td style="text-align:center;">${idx + 1}</td>
+              <td><strong>${escapeHtml(empName)}</strong><br/><span style="color:#64748b;">${escapeHtml(emp.npwp || '-')} (${emp.ptkp})</span></td>
+              <td style="text-align:right;">${formatRupiah(a.brutoTotal)}</td>
+              <td style="text-align:right;">${formatRupiah(a.biayaJabatan)}</td>
+              <td style="text-align:right;">${formatRupiah(a.neto)}</td>
+              <td style="text-align:right;">${formatRupiah(a.ptkpAmount)}</td>
+              <td style="text-align:right;">${formatRupiah(a.pkpRounded)}</td>
+              <td style="text-align:right;font-weight:700;">${formatRupiah(a.pphSetahun)}</td>
+              <td style="text-align:right;">${formatRupiah(a.pphJanNov)}</td>
+              <td style="text-align:right;font-weight:800;color:#071b34;">${formatRupiah(a.pphDesember)}</td>
+            </tr>
+          `;
+        }).join('');
+
+        pages.push(`
+          <div class="print-page">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #071b34;padding-bottom:7px;margin-bottom:10px;">
+              <div>
+                <div style="font-size:12.5pt;font-weight:800;color:#071b34;">REKAPITULASI PPh PASAL 21 TAHUNAN &amp; MASA DESEMBER (SPT 1721-A1)</div>
+                <div style="font-size:9pt;color:#475569;margin-top:2px;">Perusahaan: <strong>${escapeHtml(companyDisplay)}</strong> • NPWP: ${escapeHtml(proj.npwp || '-')}</div>
+              </div>
+              <div style="text-align:right;font-size:8pt;color:#475569;">
+                <div>Tahun Pajak: <strong>${escapeHtml(taxYear)}</strong></div>
+                <div>Jumlah Karyawan: <strong>${targetEmployees.length} Orang</strong></div>
+              </div>
+            </div>
+
+            <table class="print-table">
+              <thead>
+                <tr>
+                  <th style="width:4%;">No</th>
+                  <th style="width:18%;">Nama Karyawan &amp; PTKP</th>
+                  <th style="width:10%;">Bruto Setahun</th>
+                  <th style="width:9%;">Biaya Jabatan</th>
+                  <th style="width:10%;">Neto Setahun</th>
+                  <th style="width:9%;">PTKP</th>
+                  <th style="width:10%;">PKP Bulat</th>
+                  <th style="width:10%;">PPh Setahun</th>
+                  <th style="width:10%;">Dipotong Jan–Nov</th>
+                  <th style="width:10%;">PPh Masa Des</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+              <tfoot>
+                <tr style="background:#f1f5f9;font-weight:800;">
+                  <td colspan="2" style="text-align:right;">TOTAL SETAHUN:</td>
+                  <td style="text-align:right;">${formatRupiah(sumBruto)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumBj)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumNeto)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumPtkp)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumPkp)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumPph17)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumJanNov)}</td>
+                  <td style="text-align:right;">${formatRupiah(sumDes)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:8pt;color:#475569;">
+              <div>
+                <strong>Keterangan Rekonsiliasi Akhir Tahun:</strong><br/>
+                • PPh Pasal 21 Masa Desember merupakan selisih antara PPh 21 Setahun (Tarif Progresif Pasal 17 UU HPP) dikurangi PPh 21 yang telah dipotong pada masa Januari–November.
+              </div>
+              <div style="text-align:right;">
+                <div>${todayStr}</div>
+                <div style="margin-bottom:32px;">Bagian Keuangan &amp; Perpajakan</div>
+                <div>( ...................................... )</div>
+                <div style="font-weight:700;color:#0f172a;">${escapeHtml(companyDisplay)}</div>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      // HALAMAN 3: PPh BADAN PASAL 31E - 1 Halaman A4 Penuh
+      if (scope === 'all' || scope === 'badan') {
+        const b = computeCorporate(proj.corporate);
+        pages.push(`
+          <div class="print-page">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #071b34;padding-bottom:7px;margin-bottom:10px;">
+              <div>
+                <div style="font-size:12.5pt;font-weight:800;color:#071b34;">PERHITUNGAN PPh BADAN TERUTANG (FASILITAS PASAL 31E UU PPh)</div>
+                <div style="font-size:9pt;color:#475569;margin-top:2px;">Wajib Pajak Badan: <strong>${escapeHtml(companyDisplay)}</strong> • NPWP: ${escapeHtml(proj.npwp || '-')}</div>
+              </div>
+              <div style="text-align:right;font-size:8pt;color:#475569;">
+                <div>Tahun Pajak: <strong>${escapeHtml(taxYear)}</strong></div>
+                <div>Regulasi: UU HPP Pasal 31E &amp; SE-02/PJ/2015</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+              <div style="background:#071b34;color:#ffffff;padding:10px 14px;border-radius:8px;">
+                <div style="font-size:8pt;color:#facc15;font-weight:600;">PPh Pasal 29 (Kurang Bayar Disetor)</div>
+                <div style="font-size:15pt;font-weight:800;color:#facc15;margin:3px 0;">${formatRupiah(b.pph29)}</div>
+                <div style="font-size:7.5pt;color:#cbd5e1;">Total PPh Terutang – Kredit Pajak PPh Pasal 25</div>
+              </div>
+              <div style="border:1px solid #cbd5e1;padding:10px 14px;border-radius:8px;">
+                <div style="font-size:8pt;color:#475569;font-weight:600;">Total PPh Badan Terutang</div>
+                <div style="font-size:15pt;font-weight:800;color:#0f172a;margin:3px 0;">${formatRupiah(b.totalPph)}</div>
+                <div style="font-size:7.5pt;color:#b45309;">Gabungan Pajak Fasilitas (11%) + Non-Fasilitas (22%)</div>
+              </div>
+            </div>
+
+            <table class="print-table" style="font-size:8.2pt;">
+              <thead>
+                <tr>
+                  <th style="width:65%;text-align:left;padding:5px 10px;">Uraian Komponen Perhitungan PPh Badan Pasal 31E</th>
+                  <th style="width:35%;text-align:right;padding:5px 10px;">Jumlah (Rupiah)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:5px 10px;">1. Peredaran Bruto Usaha (Omzet Utama)</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;">${formatRupiah(proj.corporate.omzet)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 10px;">2. Peredaran Bruto Lainnya</td>
+                  <td style="padding:5px 10px;text-align:right;">${formatRupiah(proj.corporate.omzetLain)}</td>
+                </tr>
+                <tr style="background:#f8fafc;">
+                  <td style="padding:5px 10px;font-weight:700;">3. Total Peredaran Bruto (Omzet Gabungan)</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;">${formatRupiah(b.totalOmzet)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 10px;font-weight:700;">4. Penghasilan Neto Fiskal / Laba Bersih (PKP Badan)</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;">${formatRupiah(b.laba)}</td>
+                </tr>
+                <tr style="background:#f8fafc;">
+                  <td style="padding:5px 10px;">5. Bagian PKP Mendapat Fasilitas: (Rp 4.800.000.000 / Total Omzet) × PKP Badan</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;">${formatRupiah(b.pkpFasilitas)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 10px;">6. PPh Terutang Bagian Fasilitas (50% × 22% = <strong>11%</strong>)</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;color:#b45309;">${formatRupiah(b.pajakFasilitas)}</td>
+                </tr>
+                <tr style="background:#f8fafc;">
+                  <td style="padding:5px 10px;">7. Bagian PKP Tidak Mendapat Fasilitas (PKP Badan – PKP Fasilitas)</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;">${formatRupiah(b.pkpNonFasilitas)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 10px;">8. PPh Terutang Bagian Non-Fasilitas (Tarif Umum <strong>22%</strong>)</td>
+                  <td style="padding:5px 10px;text-align:right;font-weight:700;">${formatRupiah(b.pajakNonFasilitas)}</td>
+                </tr>
+                <tr style="background:#fefce8;font-weight:800;">
+                  <td style="padding:6px 10px;">9. Total PPh Badan Terutang (Poin 6 + Poin 8)</td>
+                  <td style="padding:6px 10px;text-align:right;">${formatRupiah(b.totalPph)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 10px;">10. Dikurangi: Kredit Pajak PPh Pasal 25 yang Telah Dibayar</td>
+                  <td style="padding:5px 10px;text-align:right;color:#e11d48;">- ${formatRupiah(b.kredit25)}</td>
+                </tr>
+                <tr style="background:#f1f5f9;font-weight:800;">
+                  <td style="padding:6px 10px;">11. PPh Pasal 29 (Kurang Bayar yang Harus Disetor)</td>
+                  <td style="padding:6px 10px;text-align:right;color:#071b34;">${formatRupiah(b.pph29)}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;font-size:8pt;color:#475569;">
+              <div>
+                <strong style="color:#0f172a;">Dasar Regulasi &amp; Ketentuan:</strong><br/>
+                • UU No. 36 Tahun 2008 stdd UU No. 7 Tahun 2021 (UU HPP) Pasal 31E &amp; SE-02/PJ/2015.<br/>
+                • Fasilitas pengurangan tarif 50% × 22% = 11% atas PKP dari peredaran bruto s.d. Rp 4,8 Miliar.
+              </div>
+              <div style="text-align:right;">
+                <div>${todayStr}</div>
+                <div style="margin-bottom:32px;">Bagian Keuangan &amp; Perpajakan</div>
+                <div>( ...................................... )</div>
+                <div style="font-weight:700;color:#0f172a;">${escapeHtml(companyDisplay)}</div>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      document.getElementById('printArea').innerHTML = pages.join('');
+      closeModal('printModal');
+
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    }
+
+    // =========================================================================
+    // K. REFERENSI TABEL TER PP 58/2023 & UTILITAS UMUM
+    // =========================================================================
+    function renderTerReferenceTable() {
+      const cat = document.getElementById('refTerCat').value;
+      const searchVal = parseFormattedNumber(document.getElementById('refTerSearch').value);
+      const table = cat === 'A' ? TER_TABLE_A : cat === 'B' ? TER_TABLE_B : TER_TABLE_C;
+
+      let prevLimit = 0;
+      const tbody = document.getElementById('refTerTableBody');
+      tbody.innerHTML = table.map((row, idx) => {
+        const [upper, rate] = row;
+        const lowerText = idx === 0 ? 'Rp 0' : `> ${formatRupiah(prevLimit)}`;
+        const upperText = upper === Infinity ? 'ke atas' : `s.d. ${formatRupiah(upper)}`;
+        const isMatch = searchVal > 0 && searchVal > prevLimit && searchVal <= upper;
+        prevLimit = upper;
+
+        return `
+          <tr class="${isMatch ? 'bg-amber-100 font-bold' : 'hover:bg-slate-50'}">
+            <td class="py-2 px-3 text-slate-500">${idx + 1}</td>
+            <td class="py-2 px-3">${lowerText} ${upperText}</td>
+            <td class="py-2 px-3 text-right font-bold text-slate-900">${(rate * 100).toFixed(2)}%</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tabKey) {
+      state.activeTab = tabKey;
+      document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(`tab-${tabKey}`).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100';
+      });
+      const activeBtn = document.getElementById(`tabBtn-${tabKey}`);
+      activeBtn.className = 'tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-theme-primary text-white shadow-sm';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      box.textContent = msg;
+      box.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('hidden');
+      }, 2800);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function skipIntro() {
+      const intro = document.getElementById('introOverlay');
+      if (intro) intro.classList.add('hidden-intro');
+    }
+
+    // =========================================================================
+    // L. INITIALIZATION ON WINDOW LOAD
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAppData();
+      applyThemeToDOM();
+      applyLanguageToDOM();
+      populateFormsFromActiveState();
+      recalculateAll(false);
+      renderTerReferenceTable();
+
+      // Auto fade out intro after 2.0 seconds
+      setTimeout(() => {
+        skipIntro();
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
