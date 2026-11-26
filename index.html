@@ -13,6 +13,7 @@
 
   <style>
     :root {
+      --theme-header-bg: #071b34;
       --theme-primary: #071b34;
       --theme-primary-hover: #0e2e57;
       --theme-accent: #facc15;
@@ -32,6 +33,11 @@
     }
 
     /* Dynamic Theme Utility Classes */
+    .bg-theme-header {
+      background: linear-gradient(145deg, var(--theme-header-bg) 0%, color-mix(in srgb, var(--theme-header-bg) 82%, #000000) 100%) !important;
+      background-color: var(--theme-header-bg) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 24px -10px rgba(2, 6, 23, 0.45);
+    }
     .bg-theme-primary {
       background-color: var(--theme-primary) !important;
     }
@@ -54,35 +60,151 @@
       background-color: var(--theme-soft) !important;
     }
 
-    /* Intro Splash Animation (±2.0 detik total) */
-    @keyframes logoEntrance {
+    /* =========================================================================
+       LINEAR-STYLE 3D ISOMETRIC GLASS & METAL AESTHETIC + 5.5s INTRO STAGE
+       ========================================================================= */
+    .linear-splash-bg {
+      background:
+        radial-gradient(circle at 50% 34%, color-mix(in srgb, var(--theme-accent) 18%, transparent) 0%, transparent 46%),
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--theme-primary) 75%, #090d16) 0%, #05070e 72%);
+    }
+
+    .linear-perspective-grid {
+      position: absolute;
+      inset: -15% -25% -10% -25%;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: perspective(680px) rotateX(62deg) translateY(-40px);
+      transform-origin: center top;
+      mask-image: radial-gradient(ellipse 65% 55% at 50% 42%, #000 18%, transparent 78%);
+      -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 42%, #000 18%, transparent 78%);
+      animation: gridPerspectiveDrift 6s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes gridPerspectiveDrift {
       0% {
         opacity: 0;
-        transform: scale(0.6) translateY(16px);
+        transform: perspective(680px) rotateX(68deg) translateY(-90px) scale(0.94);
       }
-      65% {
+      22% {
         opacity: 1;
-        transform: scale(1.05) translateY(-2px);
+      }
+      100% {
+        opacity: 0.85;
+        transform: perspective(680px) rotateX(60deg) translateY(-10px) scale(1.03);
+      }
+    }
+
+    .linear-3d-emblem-wrap {
+      position: relative;
+      transform-style: preserve-3d;
+      animation:
+        emblem3dEnter 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+        emblem3dLevitate 3.4s ease-in-out 1.35s infinite;
+    }
+
+    @keyframes emblem3dEnter {
+      0% {
+        opacity: 0;
+        transform: perspective(900px) rotateX(26deg) rotateY(-22deg) scale(0.68) translateY(28px);
+      }
+      70% {
+        opacity: 1;
+        transform: perspective(900px) rotateX(-4deg) rotateY(5deg) scale(1.03) translateY(-4px);
       }
       100% {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1) translateY(0);
       }
     }
 
-    @keyframes shieldGlow {
+    @keyframes emblem3dLevitate {
       0%, 100% {
-        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.35);
+        transform: perspective(900px) rotateX(2deg) rotateY(-3deg) translateY(0px);
       }
       50% {
-        box-shadow: 0 0 0 16px rgba(250, 204, 21, 0);
+        transform: perspective(900px) rotateX(-3deg) rotateY(4deg) translateY(-8px);
       }
     }
 
-    @keyframes greetingSlideUp {
+    /* Diagonal Light-Sheen Sweep across 3D Emblem */
+    .linear-sheen-card {
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 28px 60px -12px rgba(0, 0, 0, 0.75),
+        0 0 42px -6px color-mix(in srgb, var(--theme-accent) 32%, transparent),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.34),
+        inset 0 -1.5px 0 rgba(0, 0, 0, 0.55);
+    }
+
+    .linear-sheen-card::after {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: -120%;
+      width: 65%;
+      height: 180%;
+      background: linear-gradient(
+        115deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.24) 50%,
+        transparent 80%
+      );
+      transform: rotate(18deg);
+      animation: diagonalSheenSweep 2.6s cubic-bezier(0.22, 1, 0.36, 1) 1.1s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes diagonalSheenSweep {
+      0% { left: -120%; }
+      55%, 100% { left: 165%; }
+    }
+
+    /* Staged 5.5s Intro Choreography */
+    .anim-stage-title {
+      opacity: 0;
+      animation: stageTitleReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards;
+    }
+
+    .anim-stage-subtitle {
+      opacity: 0;
+      animation: stageFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.75s forwards;
+    }
+
+    .anim-stage-pill-1 {
+      opacity: 0;
+      animation: stageFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 2.2s forwards;
+    }
+    .anim-stage-pill-2 {
+      opacity: 0;
+      animation: stageFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 2.45s forwards;
+    }
+    .anim-stage-pill-3 {
+      opacity: 0;
+      animation: stageFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 2.7s forwards;
+    }
+
+    @keyframes stageTitleReveal {
       0% {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(18px) scale(0.96);
+        filter: blur(6px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes stageFadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
       }
       100% {
         opacity: 1;
@@ -90,28 +212,81 @@
       }
     }
 
-    .anim-logo {
-      animation: logoEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-                 shieldGlow 1.4s ease-in-out 0.6s infinite;
+    .intro-progress-fill {
+      width: 0%;
+      animation: introTimeline55 5.5s linear forwards;
     }
 
-    .anim-greeting {
-      opacity: 0;
-      animation: greetingSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
-    }
-
-    .anim-subgreeting {
-      opacity: 0;
-      animation: greetingSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.65s forwards;
+    @keyframes introTimeline55 {
+      0% { width: 0%; }
+      100% { width: 100%; }
     }
 
     #introOverlay {
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.55s ease, transform 0.55s ease;
     }
     #introOverlay.hidden-intro {
       opacity: 0;
       visibility: hidden;
+      transform: scale(1.02);
       pointer-events: none;
+    }
+
+    /* Linear-Style 3D Icon Pill Container for Tabs & Card Headers */
+    .linear-icon-3d {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.65rem;
+      background: linear-gradient(145deg, #1e293b 0%, #090d16 100%);
+      box-shadow:
+        0 6px 14px -3px rgba(2, 6, 23, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+      transform-style: preserve-3d;
+    }
+
+    button:hover .linear-icon-3d,
+    .linear-icon-3d:hover {
+      transform: perspective(360px) rotateX(8deg) rotateY(-8deg) translateY(-1.5px) scale(1.05);
+      box-shadow:
+        0 10px 18px -4px rgba(2, 6, 23, 0.5),
+        0 0 12px rgba(250, 204, 21, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    /* Light-Header Adaptive Contrast Mode (if user picks a bright custom header color) */
+    header.header-light-mode {
+      color: #0f172a !important;
+      border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+    }
+    header.header-light-mode .header-title-text {
+      color: #0f172a !important;
+    }
+    header.header-light-mode .header-glass-input {
+      background-color: rgba(255, 255, 255, 0.78) !important;
+      color: #0f172a !important;
+      border-color: rgba(15, 23, 42, 0.2) !important;
+    }
+    header.header-light-mode .header-glass-input::placeholder {
+      color: #64748b !important;
+    }
+    header.header-light-mode .header-secondary-btn {
+      background-color: rgba(255, 255, 255, 0.75) !important;
+      color: #0f172a !important;
+      border-color: rgba(15, 23, 42, 0.18) !important;
+    }
+    header.header-light-mode .tab-nav-border {
+      border-top-color: rgba(15, 23, 42, 0.1) !important;
+    }
+    header.header-light-mode .tab-inactive {
+      color: #334155 !important;
+    }
+    header.header-light-mode .tab-inactive:hover {
+      background-color: rgba(15, 23, 42, 0.08) !important;
+      color: #0f172a !important;
     }
 
     /* Form Controls */
@@ -261,29 +436,109 @@
 <body class="antialiased selection:bg-slate-800 selection:text-white">
 
   <!-- =========================================================================
-       1. ANIMASI INTRO SINGKAT (±2 DETIK) DENGAN LOGO PAJAK & SAMBUTAN
+       1. ANIMASI INTRO 3D LINEAR-STYLE (±5.5 DETIK) DENGAN TOMBOL LEWATI
        ========================================================================= -->
-  <div id="introOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-theme-primary text-white px-6">
-    <div class="flex flex-col items-center text-center max-w-md">
-      <!-- Animated SVG Tax Shield Logo -->
-      <div class="anim-logo w-20 h-20 rounded-2xl bg-white/10 border border-amber-400/40 flex items-center justify-center mb-5 backdrop-blur-sm">
-        <svg class="w-11 h-11 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <path d="M9 12l2 2 4-4" />
-        </svg>
+  <div id="introOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center linear-splash-bg text-white px-6 overflow-hidden">
+    <!-- 3D Perspective Grid Floor -->
+    <div class="linear-perspective-grid"></div>
+
+    <!-- Ambient Radial Glow Orbs -->
+    <div class="pointer-events-none absolute w-[420px] h-[420px] rounded-full bg-amber-400/10 blur-3xl -translate-y-12"></div>
+    <div class="pointer-events-none absolute w-[320px] h-[320px] rounded-full bg-sky-400/10 blur-3xl translate-x-24 translate-y-10"></div>
+
+    <div class="relative z-10 flex flex-col items-center text-center max-w-xl">
+      <!-- 3D Isometric Glass & Metal Tax Shield + Sovereign Coin Emblem -->
+      <div class="linear-3d-emblem-wrap mb-7">
+        <div class="linear-sheen-card w-28 h-28 sm:w-32 sm:h-32 rounded-[28px] bg-gradient-to-b from-slate-800/90 via-slate-900/95 to-[#060913] border border-white/20 flex items-center justify-center backdrop-blur-md">
+          <svg class="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-[0_12px_18px_rgba(0,0,0,0.65)]" viewBox="0 0 96 96" fill="none">
+            <defs>
+              <!-- Extruded Metallic Base -->
+              <linearGradient id="introShieldExtrude" x1="20" y1="14" x2="76" y2="86" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#334155"/>
+                <stop offset="50%" stop-color="#0f172a"/>
+                <stop offset="100%" stop-color="#020617"/>
+              </linearGradient>
+              <!-- Specular Glass Shield Body -->
+              <linearGradient id="introShieldGlass" x1="22" y1="12" x2="72" y2="80" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#475569" stop-opacity="0.95"/>
+                <stop offset="45%" stop-color="#1e293b" stop-opacity="0.92"/>
+                <stop offset="100%" stop-color="#090d16" stop-opacity="0.98"/>
+              </linearGradient>
+              <!-- Rim Light -->
+              <linearGradient id="introRimLight" x1="20" y1="12" x2="76" y2="78" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.75"/>
+                <stop offset="45%" stop-color="#facc15" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.2"/>
+              </linearGradient>
+              <!-- Sovereign Gold Coin Gradient -->
+              <linearGradient id="introGoldCoin" x1="34" y1="28" x2="66" y2="66" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="48%" stop-color="#facc15"/>
+                <stop offset="100%" stop-color="#b45309"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Isometric Shadow Base Plate -->
+            <ellipse cx="48" cy="84" rx="26" ry="5" fill="#000000" fill-opacity="0.55"/>
+
+            <!-- 3D Extruded Back Layer (Offset Down-Right for Depth) -->
+            <path d="M50 15L78 26V48C78 65.5 65.8 78.8 50 84C34.2 78.8 22 65.5 22 48V26L50 15Z" fill="url(#introShieldExtrude)"/>
+
+            <!-- 3D Front Glass-Metal Shield -->
+            <path d="M47 12L75 23V45C75 62.5 62.8 75.8 47 81C31.2 75.8 19 62.5 19 45V23L47 12Z" fill="url(#introShieldGlass)" stroke="url(#introRimLight)" stroke-width="1.8"/>
+
+            <!-- Inner Isometric Ledger Facet -->
+            <path d="M47 19L68 27.5V44.5C68 58 58.6 68.4 47 72.5C35.4 68.4 26 58 26 44.5V27.5L47 19Z" fill="#0b1222" fill-opacity="0.72" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+            <!-- 3D Floating Gold Sovereign Emblem & Check -->
+            <circle cx="48.5" cy="46.5" r="15.5" fill="#78350f"/>
+            <circle cx="47" cy="45" r="15.5" fill="url(#introGoldCoin)" stroke="#fef9c3" stroke-width="1.3"/>
+            <path d="M40.5 45.2L44.8 49.5L54 40.3" stroke="#090d16" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
       </div>
 
-      <!-- Animated Greeting -->
-      <h1 class="anim-greeting text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-        Selamat Datang Sahabat Pajak
-      </h1>
-      <p class="anim-subgreeting mt-2 text-xs sm:text-sm text-amber-300/90 font-medium">
-        Kalkulator Perpajakan Terpadu • PPh 21 TER, SPT 1721-A1 &amp; PPh Badan 31E
+      <!-- Staged Title Reveal -->
+      <div class="anim-stage-title">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-white/10 border border-white/15 text-amber-300 mb-3 backdrop-blur-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+          Sistem Perpajakan Modern Indonesia
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-b from-white via-white to-slate-300 bg-clip-text text-transparent">
+          Selamat Datang Sahabat Pajak
+        </h1>
+      </div>
+
+      <!-- Staged Subtitle Reveal -->
+      <p class="anim-stage-subtitle mt-2.5 text-xs sm:text-sm text-slate-300 font-medium max-w-md leading-relaxed">
+        Kalkulator Perpajakan Terpadu • <span class="text-amber-300 font-semibold">PPh 21 TER</span>, <span class="text-sky-300 font-semibold">SPT 1721-A1</span> &amp; <span class="text-emerald-300 font-semibold">PPh Badan 31E</span>
       </p>
+
+      <!-- Staged 3D Feature Badges -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+        <div class="anim-stage-pill-1 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/15 backdrop-blur-sm text-xs text-slate-200 shadow-lg">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>PP 58/2023 TER A/B/C</span>
+        </div>
+        <div class="anim-stage-pill-2 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/15 backdrop-blur-sm text-xs text-slate-200 shadow-lg">
+          <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+          <span>Rekonsiliasi 1721-A1</span>
+        </div>
+        <div class="anim-stage-pill-3 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/15 backdrop-blur-sm text-xs text-slate-200 shadow-lg">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Fasilitas Pasal 31E</span>
+        </div>
+      </div>
+
+      <!-- 5.5s Timeline Progress Bar -->
+      <div class="mt-7 w-56 sm:w-64 h-1 rounded-full bg-white/10 overflow-hidden">
+        <div class="intro-progress-fill h-full rounded-full bg-gradient-to-r from-amber-400 via-yellow-200 to-sky-400"></div>
+      </div>
     </div>
 
-    <button onclick="skipIntro()" class="absolute bottom-6 right-6 text-xs text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-full transition">
-      Lewati →
+    <button onclick="skipIntro()" class="absolute bottom-6 right-6 z-20 inline-flex items-center gap-1.5 text-xs font-semibold text-white/90 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-full backdrop-blur-md shadow-lg transition cursor-pointer">
+      <span>Lewati Intro</span>
+      <span>→</span>
     </button>
   </div>
 
@@ -292,40 +547,51 @@
        ========================================================================= -->
   <div id="appRoot" class="min-h-screen flex flex-col">
 
-    <!-- Top Navigation & Editable Company Name Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <!-- Dynamic Themeable Top Navigation & Editable Company Name Header -->
+    <header id="mainAppHeader" class="bg-theme-header text-white border-b border-white/15 sticky top-0 z-30 transition-colors duration-300">
       <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
 
-        <!-- Brand & Editable Company Name -->
+        <!-- Brand 3D Emblem & Editable Company Name -->
         <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-          <div class="w-10 h-10 rounded-xl bg-theme-primary flex items-center justify-center text-theme-accent shadow-sm shrink-0">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              <path d="M9 12l2 2 4-4" />
+          <div class="linear-icon-3d w-11 h-11 rounded-xl shrink-0">
+            <svg class="w-6 h-6" viewBox="0 0 32 32" fill="none">
+              <defs>
+                <linearGradient id="hdrLogoGlass" x1="5" y1="3" x2="27" y2="29" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#64748b"/>
+                  <stop offset="100%" stop-color="#0f172a"/>
+                </linearGradient>
+                <linearGradient id="hdrLogoGold" x1="10" y1="9" x2="22" y2="23" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#fef08a"/>
+                  <stop offset="100%" stop-color="#eab308"/>
+                </linearGradient>
+              </defs>
+              <path d="M16 3L27 7.5V15.5C27 22.3 22.3 27.5 16 29.5C9.7 27.5 5 22.3 5 15.5V7.5L16 3Z" fill="url(#hdrLogoGlass)" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+              <circle cx="16" cy="16" r="6.2" fill="url(#hdrLogoGold)"/>
+              <path d="M13.3 16.1L15.1 17.9L18.9 14.1" stroke="#090d16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-bold text-slate-900 text-base sm:text-lg leading-tight" data-i18n="appTitle">Aplikasi Perpajakan Terpadu</span>
-              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">PP 58/2023 &amp; UU HPP</span>
+              <span class="header-title-text font-bold text-white text-base sm:text-lg leading-tight" data-i18n="appTitle">Aplikasi Perpajakan Terpadu</span>
+              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/15 text-theme-accent border border-white/20 backdrop-blur-xs">PP 58/2023 &amp; UU HPP</span>
             </div>
 
             <!-- Direct Editable Company Name + Project Switcher -->
-            <div class="flex items-center gap-2 mt-1 flex-wrap">
+            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
               <div class="relative flex items-center">
                 <input
                   type="text"
                   id="headerCompanyInput"
                   oninput="updateActiveCompanyName(this.value)"
                   placeholder="Ketik Nama Perusahaan Anda..."
-                  class="text-xs font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-300 rounded-lg px-2.5 py-1 w-56 sm:w-64 focus:outline-none focus:border-slate-800 transition"
+                  class="header-glass-input text-xs font-semibold text-white placeholder-white/60 bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-2.5 py-1 w-56 sm:w-64 focus:outline-none focus:border-amber-300 transition"
                 />
               </div>
               <select
                 id="headerProjectSelect"
                 onchange="switchProject(this.value)"
                 title="Pindah Project / Perusahaan Klien"
-                class="text-xs font-semibold text-theme-primary bg-slate-100 hover:bg-slate-200/70 rounded-lg px-2.5 py-1 border border-slate-200 focus:outline-none cursor-pointer"
+                class="header-glass-input text-xs font-semibold text-white bg-white/10 hover:bg-white/15 rounded-lg px-2.5 py-1 border border-white/20 focus:outline-none cursor-pointer"
               ></select>
             </div>
           </div>
@@ -333,8 +599,8 @@
 
         <!-- Header Action Buttons -->
         <div class="flex items-center gap-2 sm:gap-2.5">
-          <button onclick="openPrintModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-theme-primary hover:bg-theme-primary text-white shadow-sm transition">
-            <svg class="w-4 h-4 text-theme-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button onclick="openPrintModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 hover:bg-amber-50 shadow-sm border border-white/40 transition">
+            <svg class="w-4 h-4 text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
               <polyline points="6 9 6 2 18 2 18 9"></polyline>
               <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
               <rect x="6" y="14" width="12" height="8"></rect>
@@ -342,8 +608,8 @@
             <span data-i18n="btnPrintPdf">Cetak PDF (A4)</span>
           </button>
 
-          <button onclick="openSettingsModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm transition">
-            <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button onclick="openSettingsModal()" class="header-secondary-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm backdrop-blur-xs transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
@@ -352,23 +618,118 @@
         </div>
       </div>
 
-      <!-- 4 Navigation Tabs -->
-      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 border-t border-slate-100 overflow-x-auto">
-        <nav class="flex items-center gap-1 sm:gap-2 py-2 min-w-max" role="tablist">
-          <button id="tabBtn-bulanan" onclick="switchTab('bulanan')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-theme-primary text-white shadow-sm">
-            <span>1.</span>
+      <!-- 4 Navigation Tabs with Linear-Style 3D Isometric Icons -->
+      <div class="tab-nav-border max-w-[1400px] mx-auto px-4 sm:px-6 border-t border-white/10 overflow-x-auto">
+        <nav class="flex items-center gap-1.5 sm:gap-2 py-2.5 min-w-max" role="tablist">
+          <!-- Tab 1: PPh 21 Bulanan (TER) -->
+          <button id="tabBtn-bulanan" onclick="switchTab('bulanan')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2.5 bg-white text-slate-900 shadow-md ring-1 ring-white/40">
+            <span class="linear-icon-3d w-7 h-7 shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 28 28" fill="none">
+                <defs>
+                  <linearGradient id="t1CalBody" x1="4" y1="5" x2="22" y2="24" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#475569"/>
+                    <stop offset="100%" stop-color="#0f172a"/>
+                  </linearGradient>
+                  <linearGradient id="t1Coin" x1="14" y1="13" x2="25" y2="25" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#fef08a"/>
+                    <stop offset="100%" stop-color="#eab308"/>
+                  </linearGradient>
+                </defs>
+                <!-- Extruded Back -->
+                <rect x="6" y="7" width="16" height="16" rx="3.5" fill="#020617"/>
+                <!-- Frosted Calendar Plate -->
+                <rect x="4" y="5" width="16" height="16" rx="3.5" fill="url(#t1CalBody)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+                <path d="M4 8.5C4 6.567 5.567 5 7.5 5H16.5C18.433 5 20 6.567 20 8.5V10H4V8.5Z" fill="#38bdf8" fill-opacity="0.85"/>
+                <rect x="7.5" y="12.5" width="3" height="2.2" rx="0.6" fill="#cbd5e1"/>
+                <rect x="12" y="12.5" width="3" height="2.2" rx="0.6" fill="#cbd5e1"/>
+                <!-- 3D Gold Coin Badge -->
+                <circle cx="19.5" cy="19.5" r="5.5" fill="#78350f"/>
+                <circle cx="18.8" cy="18.8" r="5.5" fill="url(#t1Coin)" stroke="#fef9c3" stroke-width="0.9"/>
+                <text x="18.8" y="21.1" text-anchor="middle" font-size="6.8" font-weight="800" fill="#090d16">%</text>
+              </svg>
+            </span>
             <span data-i18n="tabMonthly">PPh 21 Bulanan (TER)</span>
           </button>
-          <button id="tabBtn-tahunan" onclick="switchTab('tahunan')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
-            <span>2.</span>
+
+          <!-- Tab 2: PPh 21 Tahunan (1721-A1) -->
+          <button id="tabBtn-tahunan" onclick="switchTab('tahunan')" class="tab-btn tab-inactive px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2.5 text-white/85 hover:text-white hover:bg-white/10">
+            <span class="linear-icon-3d w-7 h-7 shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 28 28" fill="none">
+                <defs>
+                  <linearGradient id="t2DocFront" x1="5" y1="4" x2="20" y2="23" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#64748b"/>
+                    <stop offset="100%" stop-color="#0f172a"/>
+                  </linearGradient>
+                  <linearGradient id="t2Seal" x1="14" y1="14" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#fde047"/>
+                    <stop offset="100%" stop-color="#d97706"/>
+                  </linearGradient>
+                </defs>
+                <!-- Back Stacked Document -->
+                <rect x="7.5" y="6.5" width="14" height="17" rx="3" fill="#1e293b" stroke="rgba(255,255,255,0.2)" stroke-width="0.9"/>
+                <!-- Front Glass Document -->
+                <rect x="5" y="4" width="14" height="17" rx="3" fill="url(#t2DocFront)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+                <line x1="8" y1="9" x2="16" y2="9" stroke="#e2e8f0" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="8" y1="12.5" x2="14" y2="12.5" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round"/>
+                <!-- 3D Golden Check Seal -->
+                <circle cx="19.5" cy="19.5" r="5.3" fill="#78350f"/>
+                <circle cx="18.8" cy="18.8" r="5.3" fill="url(#t2Seal)" stroke="#fef9c3" stroke-width="0.9"/>
+                <path d="M16.5 18.9L18.1 20.5L21.3 17.3" stroke="#090d16" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
             <span data-i18n="tabAnnual">PPh 21 Tahunan (1721-A1)</span>
           </button>
-          <button id="tabBtn-badan" onclick="switchTab('badan')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
-            <span>3.</span>
+
+          <!-- Tab 3: PPh Badan (Pasal 31E) -->
+          <button id="tabBtn-badan" onclick="switchTab('badan')" class="tab-btn tab-inactive px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2.5 text-white/85 hover:text-white hover:bg-white/10">
+            <span class="linear-icon-3d w-7 h-7 shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 28 28" fill="none">
+                <defs>
+                  <linearGradient id="t3TowerLeft" x1="6" y1="5" x2="14" y2="24" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#94a3b8"/>
+                    <stop offset="100%" stop-color="#1e293b"/>
+                  </linearGradient>
+                  <linearGradient id="t3TowerRight" x1="14" y1="5" x2="22" y2="24" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#334155"/>
+                    <stop offset="100%" stop-color="#090d16"/>
+                  </linearGradient>
+                  <linearGradient id="t3PrismTop" x1="7" y1="4" x2="21" y2="11" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#fef08a"/>
+                    <stop offset="100%" stop-color="#facc15"/>
+                  </linearGradient>
+                </defs>
+                <!-- Isometric Enterprise Prism Tower -->
+                <polygon points="14,3.5 22,7.8 14,12 6,7.8" fill="url(#t3PrismTop)" stroke="#fef9c3" stroke-width="0.8"/>
+                <polygon points="6,7.8 14,12 14,24.5 6,20.2" fill="url(#t3TowerLeft)" stroke="rgba(255,255,255,0.35)" stroke-width="0.8"/>
+                <polygon points="22,7.8 14,12 14,24.5 22,20.2" fill="url(#t3TowerRight)" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
+                <!-- Glowing Window Slots -->
+                <line x1="9" y1="12.5" x2="11.5" y2="13.8" stroke="#facc15" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="9" y1="16" x2="11.5" y2="17.3" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="16.5" y1="13.8" x2="19" y2="12.5" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="16.5" y1="17.3" x2="19" y2="16" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+            </span>
             <span data-i18n="tabCorporate">PPh Badan (Pasal 31E)</span>
           </button>
-          <button id="tabBtn-referensi" onclick="switchTab('referensi')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
-            <span>4.</span>
+
+          <!-- Tab 4: Referensi Tarif & PTKP -->
+          <button id="tabBtn-referensi" onclick="switchTab('referensi')" class="tab-btn tab-inactive px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2.5 text-white/85 hover:text-white hover:bg-white/10">
+            <span class="linear-icon-3d w-7 h-7 shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 28 28" fill="none">
+                <defs>
+                  <linearGradient id="t4BookCover" x1="5" y1="5" x2="22" y2="23" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#0369a1"/>
+                  </linearGradient>
+                </defs>
+                <!-- 3D Book Spine & Pages -->
+                <rect x="7" y="6.5" width="15" height="16.5" rx="2.5" fill="#e2e8f0"/>
+                <rect x="5.5" y="4.5" width="15" height="16.5" rx="2.5" fill="url(#t4BookCover)" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+                <line x1="9" y1="4.5" x2="9" y2="21" stroke="#090d16" stroke-opacity="0.45" stroke-width="1.5"/>
+                <line x1="11.5" y1="9.5" x2="17.5" y2="9.5" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="11.5" y1="13" x2="16" y2="13" stroke="#bae6fd" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </span>
             <span data-i18n="tabReference">Referensi Tarif &amp; PTKP</span>
           </button>
         </nav>
@@ -387,7 +748,31 @@
           <!-- LEFT CARD: Parameter Input Simulasi Pemotongan Bulanan -->
           <div class="lg:col-span-5 panel-card p-5 sm:p-6">
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="monthlySimTitle">Simulasi Pemotongan Bulanan</h2>
+              <div class="flex items-center gap-2.5">
+                <span class="linear-icon-3d w-9 h-9 shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 28 28" fill="none">
+                    <defs>
+                      <linearGradient id="c1CalBody" x1="4" y1="5" x2="22" y2="24" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#475569"/>
+                        <stop offset="100%" stop-color="#0f172a"/>
+                      </linearGradient>
+                      <linearGradient id="c1Coin" x1="14" y1="13" x2="25" y2="25" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#fef08a"/>
+                        <stop offset="100%" stop-color="#eab308"/>
+                      </linearGradient>
+                    </defs>
+                    <rect x="6" y="7" width="16" height="16" rx="3.5" fill="#020617"/>
+                    <rect x="4" y="5" width="16" height="16" rx="3.5" fill="url(#c1CalBody)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+                    <path d="M4 8.5C4 6.567 5.567 5 7.5 5H16.5C18.433 5 20 6.567 20 8.5V10H4V8.5Z" fill="#38bdf8" fill-opacity="0.85"/>
+                    <rect x="7.5" y="12.5" width="3" height="2.2" rx="0.6" fill="#cbd5e1"/>
+                    <rect x="12" y="12.5" width="3" height="2.2" rx="0.6" fill="#cbd5e1"/>
+                    <circle cx="19.5" cy="19.5" r="5.5" fill="#78350f"/>
+                    <circle cx="18.8" cy="18.8" r="5.5" fill="url(#c1Coin)" stroke="#fef9c3" stroke-width="0.9"/>
+                    <text x="18.8" y="21.1" text-anchor="middle" font-size="6.8" font-weight="800" fill="#090d16">%</text>
+                  </svg>
+                </span>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="monthlySimTitle">Simulasi Pemotongan Bulanan</h2>
+              </div>
               <button onclick="resetActiveMonthlyEmployee()" class="text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 transition" data-i18n="btnReset">Reset</button>
             </div>
 
@@ -574,7 +959,30 @@
           <!-- LEFT CARD: Parameter Input Karyawan Tahunan -->
           <div class="lg:col-span-5 panel-card p-5 sm:p-6">
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="annualParamTitle">Parameter Input Karyawan</h2>
+              <div class="flex items-center gap-2.5">
+                <span class="linear-icon-3d w-9 h-9 shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 28 28" fill="none">
+                    <defs>
+                      <linearGradient id="c2DocFront" x1="5" y1="4" x2="20" y2="23" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#64748b"/>
+                        <stop offset="100%" stop-color="#0f172a"/>
+                      </linearGradient>
+                      <linearGradient id="c2Seal" x1="14" y1="14" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#fde047"/>
+                        <stop offset="100%" stop-color="#d97706"/>
+                      </linearGradient>
+                    </defs>
+                    <rect x="7.5" y="6.5" width="14" height="17" rx="3" fill="#1e293b" stroke="rgba(255,255,255,0.2)" stroke-width="0.9"/>
+                    <rect x="5" y="4" width="14" height="17" rx="3" fill="url(#c2DocFront)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+                    <line x1="8" y1="9" x2="16" y2="9" stroke="#e2e8f0" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="8" y1="12.5" x2="14" y2="12.5" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="19.5" cy="19.5" r="5.3" fill="#78350f"/>
+                    <circle cx="18.8" cy="18.8" r="5.3" fill="url(#c2Seal)" stroke="#fef9c3" stroke-width="0.9"/>
+                    <path d="M16.5 18.9L18.1 20.5L21.3 17.3" stroke="#090d16" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="annualParamTitle">Parameter Input Karyawan</h2>
+              </div>
               <button onclick="resetActiveAnnualEmployee()" class="text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 transition" data-i18n="btnReset">Reset</button>
             </div>
 
@@ -808,7 +1216,34 @@
           <!-- LEFT CARD: Input Data Keuangan Badan Usaha -->
           <div class="lg:col-span-5 panel-card p-5 sm:p-6">
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="corpInputTitle">Data Keuangan Badan Usaha</h2>
+              <div class="flex items-center gap-2.5">
+                <span class="linear-icon-3d w-9 h-9 shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 28 28" fill="none">
+                    <defs>
+                      <linearGradient id="c3TowerLeft" x1="6" y1="5" x2="14" y2="24" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#94a3b8"/>
+                        <stop offset="100%" stop-color="#1e293b"/>
+                      </linearGradient>
+                      <linearGradient id="c3TowerRight" x1="14" y1="5" x2="22" y2="24" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#334155"/>
+                        <stop offset="100%" stop-color="#090d16"/>
+                      </linearGradient>
+                      <linearGradient id="c3PrismTop" x1="7" y1="4" x2="21" y2="11" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#fef08a"/>
+                        <stop offset="100%" stop-color="#facc15"/>
+                      </linearGradient>
+                    </defs>
+                    <polygon points="14,3.5 22,7.8 14,12 6,7.8" fill="url(#c3PrismTop)" stroke="#fef9c3" stroke-width="0.8"/>
+                    <polygon points="6,7.8 14,12 14,24.5 6,20.2" fill="url(#c3TowerLeft)" stroke="rgba(255,255,255,0.35)" stroke-width="0.8"/>
+                    <polygon points="22,7.8 14,12 14,24.5 22,20.2" fill="url(#c3TowerRight)" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
+                    <line x1="9" y1="12.5" x2="11.5" y2="13.8" stroke="#facc15" stroke-width="1.3" stroke-linecap="round"/>
+                    <line x1="9" y1="16" x2="11.5" y2="17.3" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/>
+                    <line x1="16.5" y1="13.8" x2="19" y2="12.5" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"/>
+                    <line x1="16.5" y1="17.3" x2="19" y2="16" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900" data-i18n="corpInputTitle">Data Keuangan Badan Usaha</h2>
+              </div>
               <button onclick="resetCorporateData()" class="text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 transition" data-i18n="btnReset">Reset</button>
             </div>
 
@@ -1173,12 +1608,16 @@
 
           <div class="flex flex-wrap items-center gap-4 pt-1">
             <label class="flex items-center gap-2 text-xs font-medium text-slate-700">
+              <span>Warna Header:</span>
+              <input type="color" id="customHeaderPicker" value="#071b34" oninput="updateCustomColor('header')" onchange="updateCustomColor('header')" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
+            </label>
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-700">
               <span>Warna Utama:</span>
-              <input type="color" id="customPrimaryPicker" value="#071b34" onchange="updateCustomColor()" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
+              <input type="color" id="customPrimaryPicker" value="#071b34" oninput="updateCustomColor('primary')" onchange="updateCustomColor('primary')" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
             </label>
             <label class="flex items-center gap-2 text-xs font-medium text-slate-700">
               <span>Warna Aksen:</span>
-              <input type="color" id="customAccentPicker" value="#facc15" onchange="updateCustomColor()" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
+              <input type="color" id="customAccentPicker" value="#facc15" oninput="updateCustomColor('accent')" onchange="updateCustomColor('accent')" class="w-8 h-8 rounded cursor-pointer border border-slate-300" />
             </label>
           </div>
         </div>
@@ -1430,6 +1869,7 @@
     let appData = {
       lang: 'id',
       theme: {
+        headerBg: '#071b34',
         primary: '#071b34',
         primaryHover: '#0e2e57',
         accent: '#facc15',
@@ -1658,7 +2098,7 @@
       const headerSel = document.getElementById('headerProjectSelect');
       headerSel.innerHTML = appData.projects.map((p, idx) => {
         const label = p.name && p.name.trim() ? p.name.trim() : `Project #${idx + 1} (Belum dinamai)`;
-        return `<option value="${p.id}" ${p.id === proj.id ? 'selected' : ''}>${escapeHtml(label)}</option>`;
+        return `<option value="${p.id}" class="text-slate-900 bg-white" ${p.id === proj.id ? 'selected' : ''}>${escapeHtml(label)}</option>`;
       }).join('');
 
       // Employee Selectors (Bulanan & Tahunan)
@@ -2226,6 +2666,7 @@
 
       renderProjectListInModal();
       updateLangButtonsUI();
+      document.getElementById('customHeaderPicker').value = appData.theme.headerBg || appData.theme.primary;
       document.getElementById('customPrimaryPicker').value = appData.theme.primary;
       document.getElementById('customAccentPicker').value = appData.theme.accent;
       document.getElementById('settingsModal').classList.remove('hidden');
@@ -2304,39 +2745,10 @@
       showToast('Project berhasil dihapus.');
     }
 
-    function applyThemePreset(primary, primaryHover, accent, accentDark, soft) {
-      appData.theme = { primary, primaryHover, accent, accentDark, soft };
-      applyThemeToDOM();
-      saveAppData();
-      document.getElementById('customPrimaryPicker').value = primary;
-      document.getElementById('customAccentPicker').value = accent;
-    }
-
-    function updateCustomColor() {
-      const p = document.getElementById('customPrimaryPicker').value;
-      const a = document.getElementById('customAccentPicker').value;
-      appData.theme = {
-        primary: p,
-        primaryHover: p,
-        accent: a,
-        accentDark: a,
-        soft: '#f8fafc'
-      };
-      applyThemeToDOM();
-      saveAppData();
-    }
-
-    function applyThemeToDOM() {
-      const root = document.documentElement;
-      root.style.setProperty('--theme-primary', appData.theme.primary);
-      root.style.setProperty('--theme-primary-hover', appData.theme.primaryHover || appData.theme.primary);
-      root.style.setProperty('--theme-accent', appData.theme.accent);
-      root.style.setProperty('--theme-accent-dark', appData.theme.accentDark || appData.theme.accent);
-      root.style.setProperty('--theme-soft', appData.theme.soft || '#fefce8');
-    }
-
-    // Bilingual Support (ID / EN)
-    const I18N = {
+    // =========================================================================
+    // I2. PENGATURAN BAHASA (INDONESIA & ENGLISH)
+    // =========================================================================
+    const I18N_DICT = {
       id: {
         appTitle: 'Aplikasi Perpajakan Terpadu',
         btnPrintPdf: 'Cetak PDF (A4)',
@@ -2398,92 +2810,162 @@
         colorSettingHeader: '3. Custom Warna Kalkulator'
       },
       en: {
-        appTitle: 'Integrated Tax Calculator Suite',
+        appTitle: 'Integrated Tax Application',
         btnPrintPdf: 'Print PDF (A4)',
         btnSettings: 'Settings',
-        tabMonthly: 'Monthly PPh 21 (TER)',
-        tabAnnual: 'Annual PPh 21 (1721-A1)',
+        tabMonthly: 'Monthly Art. 21 Tax (TER)',
+        tabAnnual: 'Annual Art. 21 Tax (1721-A1)',
         tabCorporate: 'Corporate Tax (Art. 31E)',
-        tabReference: 'TER & PTKP Reference',
+        tabReference: 'Tax Rates & PTKP Reference',
         monthlySimTitle: 'Monthly Withholding Simulation',
         btnReset: 'Reset',
-        selectEmployeeLabel: 'Currently Selected Employee',
+        selectEmployeeLabel: 'Currently Edited Employee',
         btnAddEmp: 'Add Employee',
         btnDelEmp: 'Delete',
         empNameLabel: 'Employee Name',
         selectPtkpTerLabel: 'Select PTKP Status (Determines TER Category)',
         baseSalaryMonthLabel: 'Monthly Base Salary',
-        allowanceMonthLabel: 'PPh 21 Allowance / Other Allowance',
+        allowanceMonthLabel: 'Tax Allowance / Other Allowances',
         thrMonthLabel: 'Monthly Bonus / THR (Optional)',
-        btnCalcMonthly: 'Calculate Monthly TER',
+        btnCalcMonthly: 'Calculate TER Art. 21',
         btnSaveToList: 'Save / Add New',
-        monthlyTaxDueTitle: 'Monthly PPh 21 Payable',
-        netTakeHomeTitle: 'Net Take Home Pay',
-        netTakeHomeSub: 'Gross – PPh 21 Deduction',
-        terFormulaHeader: 'TER PP 58/2023 FORMULA BREAKDOWN',
-        btnViewPerMonth: 'View Per Month (Jan–Dec)',
-        grossThisMonth: 'Gross Income This Month:',
+        monthlyTaxDueTitle: 'Monthly Art. 21 Tax Payable',
+        netTakeHomeTitle: 'Net Take-Home Pay',
+        netTakeHomeSub: 'Gross – Art. 21 Tax Withheld',
+        terFormulaHeader: 'PP 58/2023 TER FORMULA BREAKDOWN',
+        btnViewPerMonth: 'View Monthly (Jan–Dec)',
+        grossThisMonth: 'Current Month Gross Income:',
         terCategoryLabel: 'TER Category:',
         terRateApplied: 'Effective Rate by Gross Bracket:',
-        monthlyDeductionFinal: 'PPh 21 Deduction This Month:',
-        monthlyListTitle: 'Company Employee List (Monthly PPh 21)',
-        monthlyListSub: 'Edit Name, NPWP/NIK, Salary, Allowance, & Bonus directly in table. Check left boxes to choose employees for PDF print.',
+        monthlyDeductionFinal: 'Monthly Art. 21 Tax Withheld:',
+        monthlyListTitle: 'Company Employee Roster (Monthly Art. 21)',
+        monthlyListSub: 'Edit Name, NPWP/NIK, Salary, Allowance, & Bonus directly. Check the left box to select employees for PDF printing.',
         btnSelectAll: 'Select All',
         btnUnselectAll: 'Unselect All',
-        annualParamTitle: 'Employee Input Parameters',
+        annualParamTitle: 'Employee Annual Parameters',
         ptkpStatusLabel: 'PTKP Status',
         baseSalaryCompHeader: 'BASE SALARY COMPONENTS',
         decSalaryLabel: 'December Salary',
         janNovSalaryLabel: 'Jan–Nov Salary (11 mos)',
-        decUnderpaymentTitle: 'December PPh 21 (Under/Overpayment)',
-        annualTotalTaxTitle: 'Total Annual PPh 21 (Art. 17)',
-        form1721Header: 'FORM 1721-A1 CALCULATION DETAILS',
-        annualListTitle: 'Annual PPh 21 Employee Recapitulation (SPT 1721-A1)',
-        annualListSub: 'Automatically synced with Monthly PPh 21 tab. Add/remove employees and select rows for A4 PDF export.',
+        decUnderpaymentTitle: 'December Art. 21 Tax (Under/Overpayment)',
+        annualTotalTaxTitle: 'Total Annual Art. 21 Tax (Art. 17)',
+        form1721Header: 'FORM 1721-A1 CALCULATION BREAKDOWN',
+        annualListTitle: 'Annual Employee Art. 21 Summary (Form 1721-A1)',
+        annualListSub: 'Automatically synced with Monthly Art. 21 tab. Add/remove employees and select rows for PDF export.',
         corpInputTitle: 'Corporate Financial Data',
         grossTurnoverLabel: 'Gross Business Turnover',
-        grossTurnoverHint: 'Max IDR 50 Billion for Article 31E facility',
+        grossTurnoverHint: 'Maximum IDR 50 Billion for Article 31E facility',
         otherGrossLabel: 'Other Gross Income',
-        fiscalNetProfitLabel: 'Fiscal Net Profit (Before Tax)',
-        taxCredit25Label: 'Tax Credit (Prepaid PPh Article 25)',
+        fiscalNetProfitLabel: 'Fiscal Net Income / Net Profit (Before Tax)',
+        taxCredit25Label: 'Tax Credit (Prepaid Article 25 Installments)',
         btnCalcCorp: 'Calculate Corporate Tax (Art. 31E)',
-        pph29Title: 'PPh Article 29 (Underpayment)',
-        pph29Sub: 'Payable to State Treasury',
+        pph29Title: 'Article 29 Tax (Underpayment)',
+        pph29Sub: 'Payable to state treasury',
         totalCorpTaxTitle: 'Total Corporate Tax Payable',
-        corpDetailHeader: 'ARTICLE 31E FACILITY CALCULATION DETAILS',
-        settingsTitle: 'Application Settings & Multi-Client Projects',
-        settingsSub: 'Manage multiple client companies, tax year/period, interface language, and calculator theme colors.',
+        corpDetailHeader: 'ARTICLE 31E FACILITY CALCULATION BREAKDOWN',
+        settingsTitle: 'Application Settings & Client Project Manager',
+        settingsSub: 'Manage multiple client companies, tax years/periods, UI language, and calculator color themes.',
         projectMgmtHeader: '1. Client Company Identity & Project Management',
         langSettingHeader: '2. Interface Language',
-        colorSettingHeader: '3. Calculator Color Customization'
+        colorSettingHeader: '3. Custom Calculator Colors'
       }
     };
 
     function setLanguage(lang) {
-      appData.lang = lang;
+      appData.lang = lang === 'en' ? 'en' : 'id';
       saveAppData();
       applyLanguageToDOM();
       updateLangButtonsUI();
+      populateFormsFromActiveState();
       recalculateAll(false);
     }
 
+    function updateLangButtonsUI() {
+      const idBtn = document.getElementById('langBtn-id');
+      const enBtn = document.getElementById('langBtn-en');
+      if (!idBtn || !enBtn) return;
+
+      const activeClass = 'py-2.5 px-4 rounded-xl border-2 border-slate-900 bg-slate-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+      const inactiveClass = 'py-2.5 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 hover:border-slate-400 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+
+      idBtn.className = appData.lang === 'id' ? activeClass : inactiveClass;
+      enBtn.className = appData.lang === 'en' ? activeClass : inactiveClass;
+    }
+
     function applyLanguageToDOM() {
-      const dict = I18N[appData.lang] || I18N.id;
+      const dict = I18N_DICT[appData.lang] || I18N_DICT.id;
+      document.documentElement.lang = appData.lang === 'en' ? 'en' : 'id';
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (dict[key]) el.textContent = dict[key];
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
       });
     }
 
-    function updateLangButtonsUI() {
-      const btnId = document.getElementById('langBtn-id');
-      const btnEn = document.getElementById('langBtn-en');
-      if (appData.lang === 'id') {
-        btnId.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-900 bg-slate-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
-        btnEn.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
-      } else {
-        btnEn.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-900 bg-slate-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
-        btnId.className = 'py-2.5 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition';
+    function applyThemePreset(primary, primaryHover, accent, accentDark, soft) {
+      appData.theme = { headerBg: primary, primary, primaryHover, accent, accentDark, soft };
+      applyThemeToDOM();
+      saveAppData();
+      document.getElementById('customHeaderPicker').value = primary;
+      document.getElementById('customPrimaryPicker').value = primary;
+      document.getElementById('customAccentPicker').value = accent;
+    }
+
+    function updateCustomColor(source) {
+      const hPicker = document.getElementById('customHeaderPicker');
+      const pPicker = document.getElementById('customPrimaryPicker');
+      const aPicker = document.getElementById('customAccentPicker');
+
+      // Saat Warna Utama diubah, sinkronkan Warna Header secara otomatis (tetap bisa diubah terpisah)
+      if (source === 'primary') {
+        hPicker.value = pPicker.value;
+      }
+
+      const h = hPicker.value;
+      const p = pPicker.value;
+      const a = aPicker.value;
+
+      appData.theme = {
+        headerBg: h,
+        primary: p,
+        primaryHover: p,
+        accent: a,
+        accentDark: a,
+        soft: '#f8fafc'
+      };
+      applyThemeToDOM();
+      saveAppData();
+    }
+
+    function isLightHexColor(hex) {
+      if (!hex || typeof hex !== 'string') return false;
+      const clean = hex.replace('#', '');
+      if (clean.length !== 6) return false;
+      const r = parseInt(clean.substring(0, 2), 16);
+      const g = parseInt(clean.substring(2, 4), 16);
+      const b = parseInt(clean.substring(4, 6), 16);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.72;
+    }
+
+    function applyThemeToDOM() {
+      const root = document.documentElement;
+      const headerColor = appData.theme.headerBg || appData.theme.primary;
+      root.style.setProperty('--theme-header-bg', headerColor);
+      root.style.setProperty('--theme-primary', appData.theme.primary);
+      root.style.setProperty('--theme-primary-hover', appData.theme.primaryHover || appData.theme.primary);
+      root.style.setProperty('--theme-accent', appData.theme.accent);
+      root.style.setProperty('--theme-accent-dark', appData.theme.accentDark || appData.theme.accent);
+      root.style.setProperty('--theme-soft', appData.theme.soft || '#fefce8');
+
+      const hdrEl = document.getElementById('mainAppHeader');
+      if (hdrEl) {
+        if (isLightHexColor(headerColor)) {
+          hdrEl.classList.add('header-light-mode');
+        } else {
+          hdrEl.classList.remove('header-light-mode');
+        }
       }
     }
 
@@ -2857,10 +3339,10 @@
       document.getElementById(`tab-${tabKey}`).classList.remove('hidden');
 
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100';
+        btn.className = 'tab-btn tab-inactive px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2.5 text-white/85 hover:text-white hover:bg-white/10';
       });
       const activeBtn = document.getElementById(`tabBtn-${tabKey}`);
-      activeBtn.className = 'tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-theme-primary text-white shadow-sm';
+      activeBtn.className = 'tab-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2.5 bg-white text-slate-900 shadow-md ring-1 ring-white/40';
     }
 
     function closeModal(modalId) {
@@ -2886,7 +3368,12 @@
         .replace(/"/g, '&quot;');
     }
 
+    let introTimeoutId = null;
     function skipIntro() {
+      if (introTimeoutId) {
+        clearTimeout(introTimeoutId);
+        introTimeoutId = null;
+      }
       const intro = document.getElementById('introOverlay');
       if (intro) intro.classList.add('hidden-intro');
     }
@@ -2894,6 +3381,15 @@
     // =========================================================================
     // L. INITIALIZATION ON WINDOW LOAD
     // =========================================================================
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const intro = document.getElementById('introOverlay');
+        if (intro && !intro.classList.contains('hidden-intro')) {
+          skipIntro();
+        }
+      }
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
       loadAppData();
       applyThemeToDOM();
@@ -2902,10 +3398,10 @@
       recalculateAll(false);
       renderTerReferenceTable();
 
-      // Auto fade out intro after 2.0 seconds
-      setTimeout(() => {
+      // Auto fade out 3D Linear intro after 5.5 seconds (can be skipped anytime)
+      introTimeoutId = setTimeout(() => {
         skipIntro();
-      }, 2000);
+      }, 5500);
     });
   </script>
 </body>
